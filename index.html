@@ -5,15 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>PWA Inspección - 5ta Compañía Coronel</title>
     
-    <!-- Metadatos PWA e Ícono Oficial -->
+    <!-- Enlace al Manifest e Íconos PWA para Google / Android / iOS -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0f172a">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="Bomberos 5ta">
+    <link rel="icon" type="image/png" sizes="192x192" href="logo5ta.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="logo5ta.png">
+    
+    <!-- Compatibilidad Apple iOS -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Bomberos 5ta">
-    <meta name="theme-color" content="#0f172a">
-    <link rel="icon" type="image/png" href="logo5ta.png">
     <link rel="apple-touch-icon" href="logo5ta.png">
     
-    <!-- Librerías QR -->
+    <!-- Librerías Externas QR -->
     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     
@@ -92,7 +98,7 @@
         </div>
     </div>
 
-    <!-- BLOQUE 1: UNIDAD E INSPECTOR -->
+    <!-- BLOQUE 1: UNIDAD E INSPECTOR Y MANTENCIÓN -->
     <div class="box">
         <div class="box-title">1. Identificación de Unidad e Inspector</div>
         
@@ -132,7 +138,7 @@
         </div>
     </div>
 
-    <!-- BLOQUE 2: NEUMÁTICOS -->
+    <!-- BLOQUE 2: CONTROL DE NEUMÁTICOS -->
     <div class="box">
         <div class="box-title">2. Control de Neumáticos (Presión, Huella y Fotos)</div>
         
@@ -217,6 +223,7 @@
 </div>
 
 <script>
+    // BD Local de Unidades
     const bdUnidades = {
         "B-1": { chasis: "SPARTAN-MS-2018-9921", modelo: "Bomba Urbano Pesado MetroStar", rodado: "simple" },
         "R-1": { chasis: "MAN-TGM-2021-4402", modelo: "Rescate Técnico Heavy Rescue", rodado: "simple" },
@@ -235,11 +242,20 @@
         renderSeg(itemsCabina, 'seg-cabina');
         toggleRodado('simple');
         initCanvas();
-        generarManifestDinamico();
         calcularMantencion();
+        registrarServiceWorker();
     };
 
-    /* LÓGICA DE MANTENCIÓN */
+    /* REGISTRO DE SERVICE WORKER */
+    function registrarServiceWorker() {
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('./sw.js')
+                .then((reg) => console.log('Service Worker PWA registrado:', reg.scope))
+                .catch((err) => console.error('Error al registrar Service Worker:', err));
+        }
+    }
+
+    /* LÓGICA DE MANTENCIÓN CORREGIDA Y ALERTAS */
     function calcularMantencion() {
         const actualVal = document.getElementById('km_actual').value;
         const limiteVal = document.getElementById('km_mantencion').value;
@@ -279,7 +295,7 @@
         }
     }
 
-    /* NEUMÁTICOS DÍNAMICOS */
+    /* NEUMÁTICOS DINÁMICOS */
     function toggleRodado(tipo) {
         const c = document.getElementById('contenedor-neumaticos');
         const lista = (tipo === 'doble') ? [
@@ -407,27 +423,8 @@
         canvas.addEventListener('mousedown', start); canvas.addEventListener('mousemove', move); window.addEventListener('mouseup', stop);
         canvas.addEventListener('touchstart', start); canvas.addEventListener('touchmove', move); window.addEventListener('touchend', stop);
     }
-    function limpiarFirma() { ctx.clearRect(0, 0, canvas.width, canvas.height); }
 
-    function generarManifestDinamico() {
-        const manifest = {
-            "name": "Inspección 5ta Coronel",
-            "short_name": "Bomberos 5ta",
-            "start_url": "./",
-            "display": "standalone",
-            "background_color": "#0f172a",
-            "theme_color": "#0f172a",
-            "icons": [
-                { "src": "logo5ta.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
-                { "src": "logo5ta.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
-            ]
-        };
-        const blob = new Blob([JSON.stringify(manifest)], {type: 'application/json'});
-        const link = document.createElement('link');
-        link.rel = 'manifest'; 
-        link.href = URL.createObjectURL(blob);
-        document.head.appendChild(link);
-    }
+    function limpiarFirma() { ctx.clearRect(0, 0, canvas.width, canvas.height); }
 
     function guardarInspeccionLocal() {
         const unidad = document.getElementById('select_unidad').value;
