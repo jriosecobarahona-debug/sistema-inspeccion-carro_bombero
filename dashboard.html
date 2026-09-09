@@ -3,509 +3,287 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Central - 5ta Compañía Coronel</title>
-    
-    <!-- Estilos de diseño para Pantallas Grandes (PC / Tablets) -->
-    <style>
-        :root {
-            --bg-dark: #0f172a;
-            --bg-card: #1e293b;
-            --bg-hover: #334155;
-            --border: #334155;
-            --text-main: #f8fafc;
-            --text-sub: #94a3b8;
-            --accent: #0284c7;
-            --accent-light: #38bdf8;
-            --danger: #ef4444;
-            --warning: #f59e0b;
-            --success: #10b981;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        }
-
-        body {
-            background-color: var(--bg-dark);
-            color: var(--text-main);
-            padding: 20px;
-            min-height: 100vh;
-        }
-
-        /* CABECERA PRINCIPAL */
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background-color: var(--bg-card);
-            border: 1px solid var(--border);
-            padding: 16px 24px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-        }
-
-        .brand-container {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
-
-        .brand-container img {
-            width: 52px;
-            height: 52px;
-            object-fit: contain;
-        }
-
-        .brand-text h1 {
-            font-size: 1.25rem;
-            color: var(--text-main);
-            font-weight: 700;
-        }
-
-        .brand-text p {
-            font-size: 0.85rem;
-            color: var(--accent-light);
-        }
-
-        .system-status {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            background: #0f172a;
-            padding: 8px 16px;
-            border-radius: 20px;
-            border: 1px solid var(--border);
-            font-size: 0.82rem;
-            color: var(--text-sub);
-        }
-
-        .status-dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background-color: var(--success);
-            box-shadow: 0 0 8px var(--success);
-        }
-
-        /* TARJETAS DE MÉTRICAS (KPIs) */
-        .kpi-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 16px;
-            margin-bottom: 24px;
-        }
-
-        .kpi-card {
-            background-color: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 18px;
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-
-        .kpi-title {
-            font-size: 0.8rem;
-            color: var(--text-sub);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            font-weight: 600;
-        }
-
-        .kpi-value {
-            font-size: 1.8rem;
-            font-weight: 800;
-            color: var(--text-main);
-        }
-
-        .kpi-footer {
-            font-size: 0.75rem;
-            color: var(--text-sub);
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        /* SECCIÓN DE FILTROS Y CONTROLES */
-        .controls-card {
-            background-color: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 20px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .filter-group {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            align-items: center;
-            flex: 1;
-        }
-
-        input, select {
-            background-color: var(--bg-dark);
-            border: 1px solid var(--border);
-            color: var(--text-main);
-            padding: 9px 14px;
-            border-radius: 8px;
-            font-size: 0.85rem;
-            outline: none;
-        }
-
-        input:focus, select:focus {
-            border-color: var(--accent);
-        }
-
-        .btn {
-            background-color: var(--accent);
-            color: #ffffff;
-            border: none;
-            padding: 9px 16px;
-            border-radius: 8px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            transition: background 0.2s;
-        }
-
-        .btn:hover {
-            background-color: #0369a1;
-        }
-
-        .btn-outline {
-            background-color: transparent;
-            border: 1px solid var(--border);
-            color: var(--text-main);
-        }
-
-        .btn-outline:hover {
-            background-color: var(--bg-hover);
-        }
-
-        /* TABLA PRINCIPAL DE REGISTROS */
-        .table-card {
-            background-color: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            overflow: hidden;
-        }
-
-        .table-header-title {
-            padding: 16px 20px;
-            border-bottom: 1px solid var(--border);
-            font-size: 0.95rem;
-            font-weight: 700;
-            color: var(--accent-light);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .table-container {
-            width: 100%;
-            overflow-x: auto;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: left;
-            font-size: 0.85rem;
-        }
-
-        th {
-            background-color: #162032;
-            color: var(--text-sub);
-            padding: 12px 16px;
-            font-weight: 600;
-            border-bottom: 1px solid var(--border);
-            white-space: nowrap;
-        }
-
-        td {
-            padding: 14px 16px;
-            border-bottom: 1px solid var(--border);
-            color: var(--text-main);
-            white-space: nowrap;
-        }
-
-        tr:hover {
-            background-color: var(--bg-hover);
-        }
-
-        /* BADGES / ETIQUETAS DE ESTADO */
-        .badge {
-            display: inline-block;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 700;
-            text-align: center;
-        }
-
-        .badge-success { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid #10b981; }
-        .badge-warning { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid #f59e0b; }
-        .badge-danger  { background: rgba(239, 68, 68, 0.15);  color: #f87171; border: 1px solid #ef4444; }
-
-        .hash-code {
-            font-family: monospace;
-            font-size: 0.75rem;
-            color: var(--text-sub);
-            background: var(--bg-dark);
-            padding: 3px 6px;
-            border-radius: 4px;
-            border: 1px solid var(--border);
-        }
-
-        /* FOOTER */
-        footer {
-            margin-top: 30px;
-            text-align: center;
-            font-size: 0.8rem;
-            color: var(--text-sub);
-            padding-bottom: 20px;
-        }
-
-        footer strong {
-            color: var(--accent-light);
-        }
-    </style>
+    <title>Dashboard Control de Material Mayor - Carro Bomba</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- jsPDF para Generación de PDF Certificado -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
 </head>
-<body>
+<body class="bg-slate-100 font-sans text-slate-800">
 
-    <!-- 1. CABECERA -->
-    <header>
-        <div class="brand-container">
-            <img src="logo5ta.png" alt="5ta Compañía" id="dash-logo">
-            <div class="brand-text">
-                <h1>Quinta Compañía de Bomberos Coronel</h1>
-                <p>Dashboard Central de Control & Inspecciones Material Mayor</p>
+    <!-- CABECERA PRINCIPAL -->
+    <header class="bg-slate-900 text-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-red-600 rounded-lg flex items-center justify-center font-bold text-xl shadow">🚒</div>
+                <div>
+                    <h1 class="text-xl font-bold leading-tight">Control de Material Mayor</h1>
+                    <p class="text-xs text-slate-400">Dashboard de Recepción & Certificación de Unidades</p>
+                </div>
             </div>
-        </div>
-        <div class="system-status">
-            <div class="status-dot"></div>
-            <span>Servicio de Monitoreo Activo</span>
+            <div class="flex items-center space-x-4">
+                <span id="current-time" class="text-xs font-mono text-slate-400"></span>
+            </div>
         </div>
     </header>
 
-    <!-- 2. TARJETAS DE MÉTRICAS (KPIs) -->
-    <section class="kpi-grid">
-        <div class="kpi-card">
-            <span class="kpi-title">Total Unidades</span>
-            <span class="kpi-value" id="kpi-unidades">3</span>
-            <span class="kpi-footer">B-1, R-1, Z-1 activas</span>
-        </div>
-        <div class="kpi-card">
-            <span class="kpi-title">Inspecciones del Mes</span>
-            <span class="kpi-value" id="kpi-inspecciones">12</span>
-            <span class="kpi-footer" style="color: var(--success);">↑ 100% Digitalizadas</span>
-        </div>
-        <div class="kpi-card">
-            <span class="kpi-title">Mantenimientos Próximos</span>
-            <span class="kpi-value" id="kpi-alertas" style="color: var(--warning);">1</span>
-            <span class="kpi-footer">Unidad R-1 (&lt; 1000 km)</span>
-        </div>
-        <div class="kpi-card">
-            <span class="kpi-title">Fallas Críticas (NOK)</span>
-            <span class="kpi-value" id="kpi-fallas" style="color: var(--danger);">0</span>
-            <span class="kpi-footer">Sin novedades pendientes</span>
-        </div>
-    </section>
+    <main class="max-w-7xl mx-auto px-4 py-6 space-y-6">
 
-    <!-- 3. BARRA DE FILTROS Y BÚSQUEDA -->
-    <section class="controls-card">
-        <div class="filter-group">
-            <input type="text" id="filter-search" placeholder="Buscar por Folio, Inspector..." style="min-width: 240px;" oninput="filtrarTabla()">
-            <select id="filter-unidad" onchange="filtrarTabla()">
-                <option value="">Todas las Unidades</option>
-                <option value="B-1">Unidad B-1</option>
-                <option value="R-1">Unidad R-1</option>
-                <option value="Z-1">Unidad Z-1</option>
-            </select>
-            <select id="filter-estado" onchange="filtrarTabla()">
-                <option value="">Todos los Estados</option>
-                <option value="OK">Operativo (OK)</option>
-                <option value="ADVERTENCIA">Advertencia (Mantención)</option>
-                <option value="NOK">Crítico (Falla NOK)</option>
-            </select>
-        </div>
-        <div>
-            <button class="btn btn-outline" onclick="cargarDatosDemo()">🔄 Cargar Datos LocalStorage</button>
-        </div>
-    </section>
+        <!-- PUNTO 2: LECTURA RÁPIDA "DE UN VISTAZO" (3 TARJETAS) -->
+        <section class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <!-- Tarjeta 1: Estado Operativo General -->
+            <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
+                <div>
+                    <p class="text-xs text-slate-500 uppercase font-semibold">Estado Operativo General</p>
+                    <p id="card-estado-texto" class="text-2xl font-black text-red-600 mt-1">FUERA DE SERVICIO</p>
+                    <p id="card-estado-sub" class="text-xs text-slate-400">Unidad B-1 con Falla Crítica</p>
+                </div>
+                <div id="card-estado-icon" class="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center text-red-600 font-bold text-2xl">🚨</div>
+            </div>
 
-    <!-- 4. TABLA CENTRAL DE INSPECCIONES -->
-    <section class="table-card">
-        <div class="table-header-title">
-            <span>Historial de Inspecciones Recibidas</span>
-            <span style="font-size: 0.8rem; font-weight: normal; color: var(--text-sub);" id="count-registros">3 Registros</span>
-        </div>
-        <div class="table-container">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Folio</th>
-                        <th>Fecha / Hora</th>
-                        <th>Unidad</th>
-                        <th>Inspector</th>
-                        <th>Km Actual</th>
-                        <th>Estado Mantención</th>
-                        <th>Hash SHA-256</th>
-                        <th>Acción</th>
-                    </tr>
-                </thead>
-                <tbody id="tabla-body">
-                    <!-- Los datos se cargan dinámicamente mediante JavaScript -->
-                </tbody>
-            </table>
-        </div>
-    </section>
+            <!-- Tarjeta 2: Documentación Crítica -->
+            <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
+                <div>
+                    <p class="text-xs text-slate-500 uppercase font-semibold">Documentación Crítica</p>
+                    <p class="text-2xl font-black text-amber-500 mt-1">REVISIÓN VENCIDA</p>
+                    <p class="text-xs text-slate-400">Unidad B-1 requiere RT urgente</p>
+                </div>
+                <div class="w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center text-amber-600 font-bold text-2xl">⚠️</div>
+            </div>
 
-    <footer>
-        Sistema de Supervisión de Material Mayor — <strong>Soluciones DuoTech</strong>
-    </footer>
+            <!-- Tarjeta 3: Pauta de Mantención -->
+            <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
+                <div>
+                    <p class="text-xs text-slate-500 uppercase font-semibold">Pauta de Mantención</p>
+                    <p class="text-2xl font-black text-slate-800 mt-1">OVERDUE</p>
+                    <p class="text-xs text-slate-400">+120 Horas uso bomba en B-1</p>
+                </div>
+                <div class="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 font-bold text-2xl">🛠️</div>
+            </div>
+        </section>
 
-    <!-- LÓGICA DE CARGA Y FILTRADO -->
+        <!-- PUNTO 3: TABLA CENTRAL DE UNIDADES (SINCRONIZADA CON LA APP) -->
+        <section class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+            <div class="p-5 border-b border-slate-100 flex justify-between items-center">
+                <h2 class="text-lg font-bold text-slate-800">Estado de Unidades (Sincronizado con App Móvil)</h2>
+                <span class="text-xs text-slate-400">Registros inmutables con sello digital</span>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse text-sm">
+                    <thead>
+                        <tr class="bg-slate-50 text-slate-600 uppercase text-xs border-b border-slate-200">
+                            <th class="p-4">Unidad / Carro</th>
+                            <th class="p-4">Permiso Circul.</th>
+                            <th class="p-4">SOAP</th>
+                            <th class="p-4">Revisión Técnica</th>
+                            <th class="p-4">Próx. Mantención</th>
+                            <th class="p-4">Estado Operativo</th>
+                            <th class="p-4 text-center">Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-unidades" class="divide-y divide-slate-100">
+                        <!-- Carga dinámica -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- PUNTO 4: MÓDULO DE CIERRE DE ORDEN DE TRABAJO (OT) Y CERTIFICACIÓN -->
+        <section id="modulo-ot" class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 space-y-4">
+            <div class="border-b border-slate-100 pb-3 flex justify-between items-center">
+                <div>
+                    <h3 class="text-lg font-bold text-slate-800">Cierre de Orden de Trabajo (OT) y Certificación de Rehabilitación</h3>
+                    <p class="text-xs text-slate-500">Requisito obligatorio para devolver la unidad al estado Verde (Operativo)</p>
+                </div>
+                <span class="bg-amber-100 text-amber-800 text-xs font-semibold px-2.5 py-0.5 rounded">OT Pendiente: #OT-B1-2026-09</span>
+            </div>
+
+            <form id="form-certificacion" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="space-y-3">
+                    <label class="block text-xs font-bold text-slate-700 uppercase">1. Evidencia Fotográfica de Solución</label>
+                    <input type="file" id="foto-solucion" accept="image/*" class="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-slate-800 file:text-white hover:file:bg-slate-700 cursor-pointer" required>
+                    <p class="text-xs text-slate-400">Adjunte foto del componente o reparación efectuada.</p>
+                </div>
+
+                <div class="space-y-3">
+                    <label class="block text-xs font-bold text-slate-700 uppercase">2. Certificador / Responsable Técnico</label>
+                    <input type="text" id="responsable-certificacion" placeholder="Ej. Inspector / Comandante de Material Mayor" class="w-full border border-slate-300 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-800" required>
+                </div>
+
+                <div class="md:col-span-2 space-y-3">
+                    <label class="block text-xs font-bold text-slate-700 uppercase">3. Informe Técnico de Solución</label>
+                    <textarea id="informe-tecnico" rows="3" placeholder="Detalle los trabajos realizados, repuestos cambiados y pruebas de presión/estanqueidad aprobadas..." class="w-full border border-slate-300 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-800" required></textarea>
+                </div>
+
+                <div class="md:col-span-2 flex justify-end space-x-3 pt-2">
+                    <button type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm px-5 py-2.5 rounded-lg shadow transition">
+                        Certificar, Cerrar OT y Rehabilitar Unidad
+                    </button>
+                </div>
+            </form>
+        </section>
+
+    </main>
+
+    <!-- SCRIPT DE CONTROL Y GENERACIÓN DE PDF CERTIFICADO -->
     <script>
-        // Datos de demostración iniciales para poblar la vista
-        const datosEjemplo = [
+        // Datos inmutables recibidos desde la App Móvil (Simulación)
+        let unidades = [
             {
-                folio: "5TA-B1-20260909-4821",
-                fecha: "2026-09-09 14:30",
-                unidad: "B-1",
-                inspector: "Carlos Mendoza",
-                km_actual: "45200",
-                estado_mantenimiento: "OK",
-                sha: "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                id: "B-1",
+                nombre: "Carro Bomba Urbano B-1",
+                circulacion: "Al Día",
+                soap: "Al Día",
+                rt: "Vencida",
+                mantencion: "Excedido (+120 hrs)",
+                estado: "Fuera de Servicio",
+                hash: "a8f9c210b4e571c3",
+                fechaChecklist: "2026-09-09 08:30",
+                hallazgos: "Fuga en válvula de descarga N°2 del cuerpo de bomba y revisión técnica vencida."
             },
             {
-                folio: "5TA-R1-20260908-1102",
-                fecha: "2026-09-08 09:15",
-                unidad: "R-1",
-                inspector: "Juan Rioseco",
-                km_actual: "29100",
-                estado_mantenimiento: "ADVERTENCIA",
-                sha: "8f434346648f6b96df89dda901c5176b10a6d83961dd3c1ac88b59b2dc327aa4"
+                id: "R-1",
+                nombre: "Unidad de Rescate R-1",
+                circulacion: "Al Día",
+                soap: "Al Día",
+                rt: "Al Día",
+                mantencion: "En Regla (3.500 km)",
+                estado: "Operativo",
+                hash: "f47b1902c38e91d2",
+                fechaChecklist: "2026-09-09 07:45",
+                hallazgos: "Sin hallazgos. Equipo 100% disponible."
             },
             {
-                folio: "5TA-Z1-20260907-8834",
-                fecha: "2026-09-07 18:00",
-                unidad: "Z-1",
-                inspector: "Pedro Silva",
-                km_actual: "12400",
-                estado_mantenimiento: "OK",
-                sha: "a2c3d4e5f67890123456789abcdef0123456789abcdef0123456789abcdef012"
+                id: "Z-1",
+                nombre: "Carro Cisterna Z-1",
+                circulacion: "Al Día",
+                soap: "Al Día",
+                rt: "Por Vencer (10 días)",
+                mantencion: "En Regla (1.200 km)",
+                estado: "Operativo",
+                hash: "e10293847586a9b0",
+                fechaChecklist: "2026-09-08 19:10",
+                hallazgos: "Nivel de refrigerante en límite medio. Rellenado en pauta diaria."
             }
         ];
 
-        let registrosGlobales = [];
+        document.getElementById('current-time').innerText = new Date().toLocaleString('es-CL');
 
-        window.onload = () => {
-            cargarDatosDashboard();
-        };
-
-        function cargarDatosDashboard() {
-            // Intenta leer registros reales guardados desde la PWA en LocalStorage
-            let guardados = [];
-            for (let i = 0; i < localStorage.length; i++) {
-                let key = localStorage.key(i);
-                if (key.startsWith("pwa_offline_")) {
-                    try {
-                        let item = JSON.parse(localStorage.getItem(key));
-                        guardados.push({
-                            folio: item.folio || key,
-                            fecha: item.fecha_iso ? item.fecha_iso.replace('T', ' ').substring(0, 16) : 'N/A',
-                            unidad: item.unidad || 'N/A',
-                            inspector: item.inspector || 'N/A',
-                            km_actual: item.km_actual || '0',
-                            estado_mantenimiento: 'OK',
-                            sha: item.checksum_sha256 || 'N/A'
-                        });
-                    } catch (e) { console.error("Error al leer elemento", e); }
-                }
-            }
-
-            // Si hay datos reales guardados en LocalStorage los usa, de lo contrario carga los de ejemplo
-            registrosGlobales = guardados.length > 0 ? guardados : datosEjemplo;
-            renderizarTabla(registrosGlobales);
-        }
-
-        function renderizarTabla(lista) {
-            const tbody = document.getElementById('tabla-body');
+        // Renderizar tabla central
+        function renderTabla() {
+            const tbody = document.getElementById('tabla-unidades');
             tbody.innerHTML = '';
 
-            document.getElementById('count-registros').innerText = `${lista.length} Registros`;
+            unidades.forEach(u => {
+                const tr = document.createElement('tr');
+                tr.className = "border-b border-slate-100 hover:bg-slate-50 transition";
 
-            if (lista.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color: var(--text-sub); padding:20px;">No se encontraron inspecciones coincidentes.</td></tr>`;
-                return;
-            }
+                const badge = (val, okText, isCritical = false) => {
+                    if (val === okText) return `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800">🟢 ${val}</span>`;
+                    return `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${isCritical ? 'bg-red-100 text-red-800' : 'bg-amber-100 text-amber-800'}">${isCritical ? '🔴' : '🟡'} ${val}</span>`;
+                };
 
-            lista.forEach(reg => {
-                let badgeClass = "badge-success";
-                let estadoTexto = "Operativo";
+                const estadoBadge = u.estado === "Operativo" 
+                    ? `<span class="px-2.5 py-1 rounded-lg text-xs font-bold bg-emerald-600 text-white">OPERATIVO</span>`
+                    : `<span class="px-2.5 py-1 rounded-lg text-xs font-bold bg-red-600 text-white">FUERA DE SERVICIO</span>`;
 
-                if (reg.estado_mantenimiento === "ADVERTENCIA") {
-                    badgeClass = "badge-warning";
-                    estadoTexto = "Próx. Mantención";
-                } else if (reg.estado_mantenimiento === "NOK") {
-                    badgeClass = "badge-danger";
-                    estadoTexto = "Crítico";
-                }
-
-                const shaCorta = reg.sha !== 'N/A' ? `${reg.sha.substring(0, 10)}...` : 'N/A';
-
-                tbody.innerHTML += `
-                    <tr>
-                        <td style="font-weight: bold; color: var(--accent-light);">${reg.folio}</td>
-                        <td>${reg.fecha}</td>
-                        <td><strong>${reg.unidad}</strong></td>
-                        <td>${reg.inspector}</td>
-                        <td>${reg.km_actual} km</td>
-                        <td><span class="badge ${badgeClass}">${estadoTexto}</span></td>
-                        <td><span class="hash-code" title="${reg.sha}">${shaCorta}</span></td>
-                        <td>
-                            <button class="btn btn-outline" style="padding: 4px 8px; font-size:0.75rem;" onclick="alert('Ver detalle de folio: ${reg.folio}')">🔍 Ver Detalle</button>
-                        </td>
-                    </tr>
+                tr.innerHTML = `
+                    <td class="p-4 font-bold text-slate-800">${u.nombre}<br><span class="text-xs font-mono font-normal text-slate-400">ID Sello: ${u.hash}</span></td>
+                    <td class="p-4">${badge(u.circulacion, "Al Día")}</td>
+                    <td class="p-4">${badge(u.soap, "Al Día")}</td>
+                    <td class="p-4">${badge(u.rt, "Al Día", true)}</td>
+                    <td class="p-4">${badge(u.mantencion, "En Regla (3.500 km)", true)}</td>
+                    <td class="p-4">${estadoBadge}</td>
+                    <td class="p-4 text-center">
+                        <button onclick="descargarPDF('${u.id}')" class="bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold px-3 py-1.5 rounded transition">
+                            Descargar PDF Certificado
+                        </button>
+                    </td>
                 `;
+                tbody.appendChild(tr);
             });
         }
 
-        function filtrarTabla() {
-            const texto = document.getElementById('filter-search').value.toLowerCase();
-            const unidad = document.getElementById('filter-unidad').value;
-            const estado = document.getElementById('filter-estado').value;
+        // Generar PDF Certificado (Punto 5)
+        function descargarPDF(id) {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            const u = unidades.find(item => item.id === id);
 
-            const filtrados = registrosGlobales.filter(reg => {
-                const matchTexto = reg.folio.toLowerCase().includes(texto) || reg.inspector.toLowerCase().includes(texto);
-                const matchUnidad = unidad === "" || reg.unidad === unidad;
-                const matchEstado = estado === "" || reg.estado_mantenimiento === estado;
-                return matchTexto && matchUnidad && matchEstado;
+            // Membrete
+            doc.setFillColor(15, 23, 42);
+            doc.rect(0, 0, 210, 28, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(15);
+            doc.setFont("helvetica", "bold");
+            doc.text("INFORME CERTIFICADO DE INSPECCIÓN DE UNIDAD", 14, 16);
+            doc.setFontSize(9);
+            doc.setFont("helvetica", "normal");
+            doc.text(`Cuerpo de Bomberos - Documento Inmutable | Hash Sello: ${u.hash}`, 14, 23);
+
+            // Datos de Unidad
+            doc.setTextColor(30, 41, 59);
+            doc.setFontSize(11);
+            doc.setFont("helvetica", "bold");
+            doc.text("1. Resumen de Unidad y Registro de Terreno (App)", 14, 38);
+
+            doc.autoTable({
+                startY: 42,
+                head: [['Parámetro', 'Registro']],
+                body: [
+                    ['Unidad / Carro', u.nombre],
+                    ['Fecha y Hora Registro App', u.fechaChecklist],
+                    ['Permiso de Circulación', u.circulacion],
+                    ['Seguro Obligatorio (SOAP)', u.soap],
+                    ['Revisión Técnica', u.rt],
+                    ['Horómetro / Mantención', u.mantencion],
+                    ['Estado Operativo Actual', u.estado],
+                    ['Hallazgos Reportados', u.hallazgos]
+                ],
+                theme: 'striped',
+                headStyles: { fillStyle: [30, 41, 59] }
             });
 
-            renderizarTabla(filtrados);
+            // Sello
+            const finalY = doc.lastAutoTable.finalY + 12;
+            doc.setFont("helvetica", "bold");
+            doc.text("2. Trazabilidad y Sello Inmutable", 14, finalY);
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(8);
+            doc.text("Este documento certifica el estado reportado directamente desde terreno.", 14, finalY + 6);
+            doc.text("Cualquier intervención manual posterior invalida la legalidad de este reporte.", 14, finalY + 10);
+
+            doc.save(`Reporte_Certificado_${u.id}.pdf`);
         }
 
-        function cargarDatosDemo() {
-            localStorage.clear();
-            registrosGlobales = datosEjemplo;
-            renderizarTabla(registrosGlobales);
-            alert("Vista reajustada con registros base de prueba.");
-        }
+        // Cierre de OT y rehabilitación (Punto 4)
+        document.getElementById('form-certificacion').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const responsable = document.getElementById('responsable-certificacion').value;
+
+            // Actualizar unidad B-1 a Verde (Operativo)
+            const b1 = unidades.find(u => u.id === 'B-1');
+            b1.estado = "Operativo";
+            b1.rt = "Al Día";
+            b1.mantencion = "En Regla";
+            b1.hallazgos = `Reparación certificada por ${responsable}. Fuga reparada y RT renovada.`;
+
+            // Actualizar Tarjeta 1 a Operativo
+            document.getElementById('card-estado-texto').className = "text-2xl font-black text-emerald-600 mt-1";
+            document.getElementById('card-estado-texto').innerText = "100% OPERATIVO";
+            document.getElementById('card-estado-sub').innerText = "Todas las unidades disponibles";
+            document.getElementById('card-estado-icon').className = "w-12 h-12 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 font-bold text-2xl";
+            document.getElementById('card-estado-icon').innerText = "✅";
+
+            alert(`✅ OT Cerrada exitosamente. La Unidad B-1 ha sido rehabilitada a estado OPERATIVO por ${responsable}.`);
+            renderTabla();
+            this.reset();
+        });
+
+        // Inicializar
+        renderTabla();
     </script>
 </body>
 </html>
