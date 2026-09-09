@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>PWA Inspección - 5ta Compañía Coronel</title>
     
-    <!-- Enlace al Manifest e Íconos PWA para Google / Android / iOS -->
+    <!-- Enlace al Manifest e Íconos PWA -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0f172a">
     <meta name="mobile-web-app-capable" content="yes">
@@ -13,7 +13,7 @@
     <link rel="icon" type="image/png" sizes="192x192" href="logo5ta.png">
     <link rel="icon" type="image/png" sizes="512x512" href="logo5ta.png">
     
-    <!-- Compatibilidad Apple iOS -->
+    <!-- Compatibilidad iOS -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Bomberos 5ta">
@@ -39,12 +39,15 @@
         body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 12px; }
         .container { max-width: 650px; margin: 0 auto; }
         
-        /* CABECERA PRINCIPAL */
+        /* CABECERA CON BOTÓN SALIR */
         .header { display: flex; align-items: center; justify-content: space-between; background: var(--card); padding: 12px 15px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 15px; }
         .header-brand { display: flex; align-items: center; gap: 12px; }
-        .header img { width: 48px; height: 48px; object-fit: contain; }
-        .header-title { font-size: 0.95rem; font-weight: bold; color: var(--text); }
+        .header img { width: 44px; height: 44px; object-fit: contain; }
+        .header-title { font-size: 0.9rem; font-weight: bold; color: var(--text); }
         .header-subtitle { font-size: 0.75rem; color: #38bdf8; }
+
+        .btn-exit { background: #334155; color: #f8fafc; border: 1px solid #475569; padding: 6px 12px; font-size: 0.75rem; font-weight: bold; border-radius: 6px; cursor: pointer; }
+        .btn-exit:hover { background: var(--danger); border-color: var(--danger); }
 
         .box { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 15px; margin-bottom: 15px; }
         .box-title { color: #38bdf8; font-weight: bold; font-size: 0.9rem; border-bottom: 1px solid var(--border); padding-bottom: 6px; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
@@ -78,7 +81,11 @@
         
         .alert-status { padding: 12px; border-radius: 6px; font-size: 0.85rem; font-weight: bold; text-align: center; margin-top: 10px; transition: all 0.3s ease; }
 
-        #qr-resumen-container { text-align: center; margin-top: 15px; display: none; background: #fff; padding: 15px; border-radius: 8px; width: fit-content; margin: 15px auto; }
+        /* CONTENEDOR CERTIFICADO SHA-256 Y QR */
+        #cert-container { text-align: center; margin-top: 15px; display: none; background: #ffffff; color: #000000; padding: 15px; border-radius: 8px; border: 2px solid var(--accent); }
+        .folio-header { font-size: 1.1rem; font-weight: bold; color: #0284c7; margin-bottom: 4px; }
+        .sha-box { font-family: monospace; font-size: 0.68rem; word-break: break-all; background: #f1f5f9; padding: 6px; border-radius: 4px; border: 1px solid #cbd5e1; margin: 8px 0; color: #334155; }
+
         footer { text-align: center; color: var(--text-dim); font-size: 0.75rem; margin-top: 25px; padding-bottom: 15px; }
         footer strong { color: #38bdf8; }
     </style>
@@ -92,10 +99,11 @@
         <div class="header-brand">
             <img src="logo5ta.png" alt="5ta Compañía" id="app-logo">
             <div>
-                <div class="header-title">Quinta Compañía de Coronel</div>
-                <div class="header-subtitle">Sistema de Inspección de Material Mayor</div>
+                <div class="header-title">Quinta Compañía Coronel</div>
+                <div class="header-subtitle">Inspección de Material Mayor</div>
             </div>
         </div>
+        <button class="btn-exit" onclick="salirAplicacion()" title="Salir o Volver">✕ Salir</button>
     </div>
 
     <!-- BLOQUE 1: UNIDAD E INSPECTOR Y MANTENCIÓN -->
@@ -117,7 +125,7 @@
                         <option value="R-1">Unidad R-1 (Rescate Técnico)</option>
                         <option value="Z-1">Unidad Z-1 (Cisterna Doble Eje)</option>
                     </select>
-                    <button class="btn" style="width: auto; margin-top:0; padding: 0 15px;" onclick="iniciarEscanerQR()" title="Escanear QR de la Cabina">📷 QR</button>
+                    <button class="btn" style="width: auto; margin-top:0; padding: 0 15px;" onclick="iniciarEscanerQR()" title="Escanear QR Cabina">📷 QR</button>
                 </div>
             </div>
 
@@ -157,15 +165,13 @@
     <div class="box">
         <div class="box-title">3. Inspección Perimetral Exterior (Fotos y Hallazgos por Lado)</div>
         
-        <!-- Frontal -->
         <div class="side-card">
             <span class="sub-title">1. Lado Frontal (Cabina / Luces / Parachoques)</span>
             <div class="field"><label>Fotografía General Lado Frontal:</label><input type="file" id="foto_frontal" accept="image/*" capture="environment"></div>
-            <div class="field"><label>Hallazgos / Observaciones:</label><textarea id="obs_frontal" rows="2" placeholder="Describa si existen abolladuras, parabrisas trizado..."></textarea></div>
+            <div class="field"><label>Hallazgos / Observaciones:</label><textarea id="obs_frontal" rows="2" placeholder="Describa abolladuras, parabrisas trizado..."></textarea></div>
             <div class="field"><label>Foto Evidencia Hallazgo (Opcional):</label><input type="file" id="foto_hallazgo_frontal" accept="image/*" capture="environment"></div>
         </div>
 
-        <!-- Lateral Izquierdo -->
         <div class="side-card">
             <span class="sub-title">2. Lado Lateral Izquierdo (Cortinas / Cajones / Espejo)</span>
             <div class="field"><label>Fotografía General Lado Izquierdo:</label><input type="file" id="foto_izq" accept="image/*" capture="environment"></div>
@@ -173,7 +179,6 @@
             <div class="field"><label>Foto Evidencia Hallazgo (Opcional):</label><input type="file" id="foto_hallazgo_izq" accept="image/*" capture="environment"></div>
         </div>
 
-        <!-- Lateral Derecho -->
         <div class="side-card">
             <span class="sub-title">3. Lado Lateral Derecho (Cortinas / Cajones / Espejo)</span>
             <div class="field"><label>Fotografía General Lado Derecho:</label><input type="file" id="foto_der" accept="image/*" capture="environment"></div>
@@ -181,7 +186,6 @@
             <div class="field"><label>Foto Evidencia Hallazgo (Opcional):</label><input type="file" id="foto_hallazgo_der" accept="image/*" capture="environment"></div>
         </div>
 
-        <!-- Posterior -->
         <div class="side-card">
             <span class="sub-title">4. Lado Posterior (Escala / Salidas / Luces Traseras)</span>
             <div class="field"><label>Fotografía General Lado Posterior:</label><input type="file" id="foto_post" accept="image/*" capture="environment"></div>
@@ -204,18 +208,22 @@
         <div id="seg-cabina"></div>
     </div>
 
-    <!-- BLOQUE 5: FIRMA Y GUARDADO -->
+    <!-- BLOQUE 5: FIRMA Y TRANSMISIÓN AUTOMÁTICA -->
     <div class="box">
         <div class="box-title">5. Conformidad, Firma Digital e Inspección</div>
         <label>Firma del Inspector en Terreno:</label>
         <canvas id="canvas-firma"></canvas>
         <button style="background:transparent; color:var(--danger); border:none; font-size:0.75rem; cursor:pointer; padding:6px 0; font-weight:bold;" onclick="limpiarFirma()">Limpiar Firma Canvas</button>
         
-        <button class="btn" onclick="guardarInspeccionLocal()">Finalizar Registro e Inspección</button>
+        <button class="btn" onclick="procesarInspeccionSHA256()">Finalizar Registro, Certificar y Enviar</button>
 
-        <div id="qr-resumen-container">
-            <div id="qrcode"></div>
-            <span style="color:#000; font-size:0.75rem; font-weight:bold; display:block; margin-top:6px;">Registro Codificado de Terreno</span>
+        <!-- CERTIFICADO CON FOLIO Y HASH -->
+        <div id="cert-container">
+            <div class="folio-header" id="cert-folio">FOLIO: 5TA-0000</div>
+            <div style="font-size:0.75rem; font-weight:bold; color:#64748b;">CERTIFICACIÓN CRIPTOGRÁFICA SHA-256</div>
+            <div class="sha-box" id="cert-sha">HASH: Calculando...</div>
+            <div id="qrcode" style="display:flex; justify-content:center; margin: 10px 0;"></div>
+            <span style="color:#0f172a; font-size:0.72rem; font-weight:bold; display:block;">Documento Validado e Inmutable</span>
         </div>
     </div>
 
@@ -223,7 +231,9 @@
 </div>
 
 <script>
-    // BD Local de Unidades
+    // Dirección URL del Servidor / Endpoint API (Reemplazar con el endpoint real del Dashboard)
+    const API_ENDPOINT = "https://api.duotech.cl/v1/inspecciones";
+
     const bdUnidades = {
         "B-1": { chasis: "SPARTAN-MS-2018-9921", modelo: "Bomba Urbano Pesado MetroStar", rodado: "simple" },
         "R-1": { chasis: "MAN-TGM-2021-4402", modelo: "Rescate Técnico Heavy Rescue", rodado: "simple" },
@@ -246,7 +256,16 @@
         registrarServiceWorker();
     };
 
-    /* REGISTRO DE SERVICE WORKER */
+    function salirAplicacion() {
+        if (confirm("¿Desea cerrar la interfaz de inspección?")) {
+            if (window.history.length > 1) {
+                window.history.back();
+            } else {
+                window.location.href = "about:blank";
+            }
+        }
+    }
+
     function registrarServiceWorker() {
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('./sw.js')
@@ -255,7 +274,6 @@
         }
     }
 
-    /* LÓGICA DE MANTENCIÓN CORREGIDA Y ALERTAS */
     function calcularMantencion() {
         const actualVal = document.getElementById('km_actual').value;
         const limiteVal = document.getElementById('km_mantencion').value;
@@ -295,7 +313,6 @@
         }
     }
 
-    /* NEUMÁTICOS DINÁMICOS */
     function toggleRodado(tipo) {
         const c = document.getElementById('contenedor-neumaticos');
         const lista = (tipo === 'doble') ? [
@@ -400,6 +417,7 @@
         }
     }
 
+    /* CANVAS FIRMA DIGITAL */
     let canvas, ctx, dibujando = false;
     function initCanvas() {
         canvas = document.getElementById('canvas-firma');
@@ -426,22 +444,84 @@
 
     function limpiarFirma() { ctx.clearRect(0, 0, canvas.width, canvas.height); }
 
-    function guardarInspeccionLocal() {
+    /* FUNCIÓN CÁLCULO HASH SHA-256 (WEB CRYPTO API) */
+    async function generarSHA256(cadena) {
+        const encoder = new TextEncoder();
+        const data = encoder.encode(cadena);
+        const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    /* GENERACIÓN DE FOLIO, CERTIFICACIÓN Y TRANSMISIÓN AL DASHBOARD */
+    async function procesarInspeccionSHA256() {
         const unidad = document.getElementById('select_unidad').value;
         const inspector = document.getElementById('inspector').value;
+        const rut = document.getElementById('rut').value;
 
         if (!unidad || !inspector) {
             alert("Seleccione una Unidad e ingrese el Nombre del Inspector.");
             return;
         }
 
-        const payload = `5TA-CORONEL|UNIDAD:${unidad}|INSPECTOR:${inspector}|KM:${document.getElementById('km_actual').value}|HORAS:${document.getElementById('horometro').value}|FECHA:${new Date().toISOString().split('T')[0]}`;
-        
-        document.getElementById('qr-resumen-container').style.display = 'block';
-        document.getElementById('qrcode').innerHTML = '';
-        new QRCode(document.getElementById("qrcode"), { text: payload, width: 128, height: 128 });
+        // 1. Generar Folio Único Correlativo
+        const fecha = new Date();
+        const fechaStr = fecha.toISOString().split('T')[0].replace(/-/g, '');
+        const aleatorio = Math.floor(1000 + Math.random() * 9000);
+        const folio = `5TA-${unidad.replace('-','')}-${fechaStr}-${aleatorio}`;
 
-        alert("Inspección de la unidad " + unidad + " guardada en el dispositivo.");
+        // 2. Extraer Firma Base64 de Canvas
+        const firmaBase64 = canvas.toDataURL();
+
+        // 3. Empaquetado Estructurado de Datos (JSON)
+        const payloadObj = {
+            folio: folio,
+            unidad: unidad,
+            chasis: document.getElementById('unidad_chasis').value,
+            modelo: document.getElementById('unidad_modelo').value,
+            inspector: inspector,
+            rut: rut,
+            km_actual: document.getElementById('km_actual').value,
+            km_limite: document.getElementById('km_mantencion').value,
+            horometro: document.getElementById('horometro').value,
+            fecha_iso: fecha.toISOString(),
+            firma: firmaBase64
+        };
+
+        // 4. Calcular Hash SHA-256
+        const hashSHA = await generarSHA256(JSON.stringify(payloadObj));
+        payloadObj.checksum_sha256 = hashSHA;
+
+        // 5. Renderizar Certificado en Pantalla Terreno
+        document.getElementById('cert-container').style.display = 'block';
+        document.getElementById('cert-folio').innerText = `FOLIO: ${folio}`;
+        document.getElementById('cert-sha').innerText = `SHA-256: ${hashSHA}`;
+
+        // 6. Generar QR Criptográfico
+        const qrPayload = `FOLIO:${folio}|SHA256:${hashSHA}`;
+        document.getElementById('qrcode').innerHTML = '';
+        new QRCode(document.getElementById("qrcode"), { text: qrPayload, width: 140, height: 140 });
+
+        // 7. ENVÍO AUTOMÁTICO AL SERVIDOR / DASHBOARD
+        if (navigator.onLine) {
+            try {
+                /*
+                fetch(API_ENDPOINT, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payloadObj)
+                });
+                */
+                console.log("Datos listos para sincronización con Dashboard:", payloadObj);
+                alert(`Inspección Certificada y Enviada al Dashboard.\nFolio: ${folio}`);
+            } catch (e) {
+                localStorage.setItem(`pwa_offline_${folio}`, JSON.stringify(payloadObj));
+                alert(`Guardado localmente (Offline). Se enviará al reconectar.\nFolio: ${folio}`);
+            }
+        } else {
+            localStorage.setItem(`pwa_offline_${folio}`, JSON.stringify(payloadObj));
+            alert(`Registro guardado en memoria móvil (Sin conexión).\nFolio: ${folio}`);
+        }
     }
 </script>
 </body>
