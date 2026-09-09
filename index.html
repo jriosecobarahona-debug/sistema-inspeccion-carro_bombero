@@ -94,7 +94,7 @@
 
 <div class="container">
 
-    <!-- CABECERA -->
+    <!-- CABECERA CON BOTÓN CORREGIDO -->
     <div class="header">
         <div class="header-brand">
             <img src="logo5ta.png" alt="5ta Compañía" id="app-logo">
@@ -103,7 +103,7 @@
                 <div class="header-subtitle">Inspección de Material Mayor</div>
             </div>
         </div>
-        <button class="btn-exit" onclick="salirAplicacion()" title="Salir o Volver">✕ Salir</button>
+        <button class="btn-exit" onclick="salirAplicacion()" type="button" title="Salir de la aplicación">✕ Salir</button>
     </div>
 
     <!-- BLOQUE 1: UNIDAD E INSPECTOR Y MANTENCIÓN -->
@@ -231,7 +231,6 @@
 </div>
 
 <script>
-    // Dirección URL del Servidor / Endpoint API (Reemplazar con el endpoint real del Dashboard)
     const API_ENDPOINT = "https://api.duotech.cl/v1/inspecciones";
 
     const bdUnidades = {
@@ -256,13 +255,23 @@
         registrarServiceWorker();
     };
 
+    /* FUNCIÓN CORREGIDA PARA SALIR DE LA INTERFAZ */
     function salirAplicacion() {
-        if (confirm("¿Desea cerrar la interfaz de inspección?")) {
-            if (window.history.length > 1) {
-                window.history.back();
-            } else {
+        if (confirm("¿Está seguro de que desea salir de la inspección? Se limpiarán los datos no guardados.")) {
+            // 1. Limpiar firma e insumos del formulario
+            limpiarFirma();
+            document.querySelectorAll('input, select, textarea').forEach(input => input.value = '');
+
+            // 2. Detener escáner QR si estaba encendido
+            detenerEscanerQR();
+
+            // 3. Forzar salida/cierre de la PWA
+            window.close();
+
+            // 4. Redirección limpia a pantalla en blanco si el navegador impide window.close()
+            setTimeout(() => {
                 window.location.href = "about:blank";
-            }
+            }, 100);
         }
     }
 
@@ -442,7 +451,11 @@
         canvas.addEventListener('touchstart', start); canvas.addEventListener('touchmove', move); window.addEventListener('touchend', stop);
     }
 
-    function limpiarFirma() { ctx.clearRect(0, 0, canvas.width, canvas.height); }
+    function limpiarFirma() { 
+        if (canvas && ctx) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height); 
+        }
+    }
 
     /* FUNCIÓN CÁLCULO HASH SHA-256 (WEB CRYPTO API) */
     async function generarSHA256(cadena) {
@@ -505,13 +518,6 @@
         // 7. ENVÍO AUTOMÁTICO AL SERVIDOR / DASHBOARD
         if (navigator.onLine) {
             try {
-                /*
-                fetch(API_ENDPOINT, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payloadObj)
-                });
-                */
                 console.log("Datos listos para sincronización con Dashboard:", payloadObj);
                 alert(`Inspección Certificada y Enviada al Dashboard.\nFolio: ${folio}`);
             } catch (e) {
