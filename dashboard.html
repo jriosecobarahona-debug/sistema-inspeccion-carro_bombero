@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Central - 5ta Compañía Coronel</title>
+    
+    <!-- Estilos de diseño para Pantallas Grandes (PC / Tablets) -->
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --bg-card: #1e293b;
+            --bg-hover: #334155;
+            --border: #334155;
+            --text-main: #f8fafc;
+            --text-sub: #94a3b8;
+            --accent: #0284c7;
+            --accent-light: #38bdf8;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --success: #10b981;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        /* CABECERA PRINCIPAL */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: var(--bg-card);
+            border: 1px solid var(--border);
+            padding: 16px 24px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .brand-container {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .brand-container img {
+            width: 52px;
+            height: 52px;
+            object-fit: contain;
+        }
+
+        .brand-text h1 {
+            font-size: 1.25rem;
+            color: var(--text-main);
+            font-weight: 700;
+        }
+
+        .brand-text p {
+            font-size: 0.85rem;
+            color: var(--accent-light);
+        }
+
+        .system-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #0f172a;
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            font-size: 0.82rem;
+            color: var(--text-sub);
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: var(--success);
+            box-shadow: 0 0 8px var(--success);
+        }
+
+        /* TARJETAS DE MÉTRICAS (KPIs) */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .kpi-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .kpi-title {
+            font-size: 0.8rem;
+            color: var(--text-sub);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        .kpi-value {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--text-main);
+        }
+
+        .kpi-footer {
+            font-size: 0.75rem;
+            color: var(--text-sub);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* SECCIÓN DE FILTROS Y CONTROLES */
+        .controls-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+            flex: 1;
+        }
+
+        input, select {
+            background-color: var(--bg-dark);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 9px 14px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            outline: none;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--accent);
+        }
+
+        .btn {
+            background-color: var(--accent);
+            color: #ffffff;
+            border: none;
+            padding: 9px 16px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: background 0.2s;
+        }
+
+        .btn:hover {
+            background-color: #0369a1;
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-main);
+        }
+
+        .btn-outline:hover {
+            background-color: var(--bg-hover);
+        }
+
+        /* TABLA PRINCIPAL DE REGISTROS */
+        .table-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .table-header-title {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--accent-light);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.85rem;
+        }
+
+        th {
+            background-color: #162032;
+            color: var(--text-sub);
+            padding: 12px 16px;
+            font-weight: 600;
+            border-bottom: 1px solid var(--border);
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-main);
+            white-space: nowrap;
+        }
+
+        tr:hover {
+            background-color: var(--bg-hover);
+        }
+
+        /* BADGES / ETIQUETAS DE ESTADO */
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-align: center;
+        }
+
+        .badge-success { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid #10b981; }
+        .badge-warning { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid #f59e0b; }
+        .badge-danger  { background: rgba(239, 68, 68, 0.15);  color: #f87171; border: 1px solid #ef4444; }
+
+        .hash-code {
+            font-family: monospace;
+            font-size: 0.75rem;
+            color: var(--text-sub);
+            background: var(--bg-dark);
+            padding: 3px 6px;
+            border-radius: 4px;
+            border: 1px solid var(--border);
+        }
+
+        /* FOOTER */
+        footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--text-sub);
+            padding-bottom: 20px;
+        }
+
+        footer strong {
+            color: var(--accent-light);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 1. CABECERA -->
+    <header>
+        <div class="brand-container">
+            <img src="logo5ta.png" alt="5ta Compañía" id="dash-logo">
+            <div class="brand-text">
+                <h1>Quinta Compañía de Bomberos Coronel</h1>
+                <p>Dashboard Central de Control & Inspecciones Material Mayor</p>
+            </div>
+        </div>
+        <div class="system-status">
+            <div class="status-dot"></div>
+            <span>Servicio de Monitoreo Activo</span>
+        </div>
+    </header>
+
+    <!-- 2. TARJETAS DE MÉTRICAS (KPIs) -->
+    <section class="kpi-grid">
+        <div class="kpi-card">
+            <span class="kpi-title">Total Unidades</span>
+            <span class="kpi-value" id="kpi-unidades">3</span>
+            <span class="kpi-footer">B-1, R-1, Z-1 activas</span>
+        </div>
+        <div class="kpi-card">
+            <span class="kpi-title">Inspecciones del Mes</span>
+            <span class="kpi-value" id="kpi-inspecciones">12</span>
+            <span class="kpi-footer" style="color: var(--success);">↑ 100% Digitalizadas</span>
+        </div>
+        <div class="kpi-card">
+            <span class="kpi-title">Mantenimientos Próximos</span>
+            <span class="kpi-value" id="kpi-alertas" style="color: var(--warning);">1</span>
+            <span class="kpi-footer">Unidad R-1 (&lt; 1000 km)</span>
+        </div>
+        <div class="kpi-card">
+            <span class="kpi-title">Fallas Críticas (NOK)</span>
+            <span class="kpi-value" id="kpi-fallas" style="color: var(--danger);">0</span>
+            <span class="kpi-footer">Sin novedades pendientes</span>
+        </div>
+    </section>
+
+    <!-- 3. BARRA DE FILTROS Y BÚSQUEDA -->
+    <section class="controls-card">
+        <div class="filter-group">
+            <input type="text" id="filter-search" placeholder="Buscar por Folio, Inspector..." style="min-width: 240px;" oninput="filtrarTabla()">
+            <select id="filter-unidad" onchange="filtrarTabla()">
+                <option value="">Todas las Unidades</option>
+                <option value="B-1">Unidad B-1</option>
+                <option value="R-1">Unidad R-1</option>
+                <option value="Z-1">Unidad Z-1</option>
+            </select>
+            <select id="filter-estado" onchange="filtrarTabla()">
+                <option value="">Todos los Estados</option>
+                <option value="OK">Operativo (OK)</option>
+                <option value="ADVERTENCIA">Advertencia (Mantención)</option>
+                <option value="NOK">Crítico (Falla NOK)</option>
+            </select>
+        </div>
+        <div>
+            <button class="btn btn-outline" onclick="cargarDatosDemo()">🔄 Cargar Datos LocalStorage</button>
+        </div>
+    </section>
+
+    <!-- 4. TABLA CENTRAL DE INSPECCIONES -->
+    <section class="table-card">
+        <div class="table-header-title">
+            <span>Historial de Inspecciones Recibidas</span>
+            <span style="font-size: 0.8rem; font-weight: normal; color: var(--text-sub);" id="count-registros">3 Registros</span>
+        </div>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Folio</th>
+                        <th>Fecha / Hora</th>
+                        <th>Unidad</th>
+                        <th>Inspector</th>
+                        <th>Km Actual</th>
+                        <th>Estado Mantención</th>
+                        <th>Hash SHA-256</th>
+                        <th>Acción</th>
+                    </tr>
+                </thead>
+                <tbody id="tabla-body">
+                    <!-- Los datos se cargan dinámicamente mediante JavaScript -->
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <footer>
+        Sistema de Supervisión de Material Mayor — <strong>Soluciones DuoTech</strong>
+    </footer>
+
+    <!-- LÓGICA DE CARGA Y FILTRADO -->
+    <script>
+        // Datos de demostración iniciales para poblar la vista
+        const datosEjemplo = [
+            {
+                folio: "5TA-B1-20260909-4821",
+                fecha: "2026-09-09 14:30",
+                unidad: "B-1",
+                inspector: "Carlos Mendoza",
+                km_actual: "45200",
+                estado_mantenimiento: "OK",
+                sha: "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            {
+                folio: "5TA-R1-20260908-1102",
+                fecha: "2026-09-08 09:15",
+                unidad: "R-1",
+                inspector: "Juan Rioseco",
+                km_actual: "29100",
+                estado_mantenimiento: "ADVERTENCIA",
+                sha: "8f434346648f6b96df89dda901c5176b10a6d83961dd3c1ac88b59b2dc327aa4"
+            },
+            {
+                folio: "5TA-Z1-20260907-8834",
+                fecha: "2026-09-07 18:00",
+                unidad: "Z-1",
+                inspector: "Pedro Silva",
+                km_actual: "12400",
+                estado_mantenimiento: "OK",
+                sha: "a2c3d4e5f67890123456789abcdef0123456789abcdef0123456789abcdef012"
+            }
+        ];
+
+        let registrosGlobales = [];
+
+        window.onload = () => {
+            cargarDatosDashboard();
+        };
+
+        function cargarDatosDashboard() {
+            // Intenta leer registros reales guardados desde la PWA en LocalStorage
+            let guardados = [];
+            for (let i = 0; i < localStorage.length; i++) {
+                let key = localStorage.key(i);
+                if (key.startsWith("pwa_offline_")) {
+                    try {
+                        let item = JSON.parse(localStorage.getItem(key));
+                        guardados.push({
+                            folio: item.folio || key,
+                            fecha: item.fecha_iso ? item.fecha_iso.replace('T', ' ').substring(0, 16) : 'N/A',
+                            unidad: item.unidad || 'N/A',
+                            inspector: item.inspector || 'N/A',
+                            km_actual: item.km_actual || '0',
+                            estado_mantenimiento: 'OK',
+                            sha: item.checksum_sha256 || 'N/A'
+                        });
+                    } catch (e) { console.error("Error al leer elemento", e); }
+                }
+            }
+
+            // Si hay datos reales guardados en LocalStorage los usa, de lo contrario carga los de ejemplo
+            registrosGlobales = guardados.length > 0 ? guardados : datosEjemplo;
+            renderizarTabla(registrosGlobales);
+        }
+
+        function renderizarTabla(lista) {
+            const tbody = document.getElementById('tabla-body');
+            tbody.innerHTML = '';
+
+            document.getElementById('count-registros').innerText = `${lista.length} Registros`;
+
+            if (lista.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color: var(--text-sub); padding:20px;">No se encontraron inspecciones coincidentes.</td></tr>`;
+                return;
+            }
+
+            lista.forEach(reg => {
+                let badgeClass = "badge-success";
+                let estadoTexto = "Operativo";
+
+                if (reg.estado_mantenimiento === "ADVERTENCIA") {
+                    badgeClass = "badge-warning";
+                    estadoTexto = "Próx. Mantención";
+                } else if (reg.estado_mantenimiento === "NOK") {
+                    badgeClass = "badge-danger";
+                    estadoTexto = "Crítico";
+                }
+
+                const shaCorta = reg.sha !== 'N/A' ? `${reg.sha.substring(0, 10)}...` : 'N/A';
+
+                tbody.innerHTML += `
+                    <tr>
+                        <td style="font-weight: bold; color: var(--accent-light);">${reg.folio}</td>
+                        <td>${reg.fecha}</td>
+                        <td><strong>${reg.unidad}</strong></td>
+                        <td>${reg.inspector}</td>
+                        <td>${reg.km_actual} km</td>
+                        <td><span class="badge ${badgeClass}">${estadoTexto}</span></td>
+                        <td><span class="hash-code" title="${reg.sha}">${shaCorta}</span></td>
+                        <td>
+                            <button class="btn btn-outline" style="padding: 4px 8px; font-size:0.75rem;" onclick="alert('Ver detalle de folio: ${reg.folio}')">🔍 Ver Detalle</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function filtrarTabla() {
+            const texto = document.getElementById('filter-search').value.toLowerCase();
+            const unidad = document.getElementById('filter-unidad').value;
+            const estado = document.getElementById('filter-estado').value;
+
+            const filtrados = registrosGlobales.filter(reg => {
+                const matchTexto = reg.folio.toLowerCase().includes(texto) || reg.inspector.toLowerCase().includes(texto);
+                const matchUnidad = unidad === "" || reg.unidad === unidad;
+                const matchEstado = estado === "" || reg.estado_mantenimiento === estado;
+                return matchTexto && matchUnidad && matchEstado;
+            });
+
+            renderizarTabla(filtrados);
+        }
+
+        function cargarDatosDemo() {
+            localStorage.clear();
+            registrosGlobales = datosEjemplo;
+            renderizarTabla(registrosGlobales);
+            alert("Vista reajustada con registros base de prueba.");
+        }
+    </script>
+</body>
+</html>
