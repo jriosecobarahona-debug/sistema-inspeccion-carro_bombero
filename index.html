@@ -4,9 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>PWA Inspección - 5ta Compañía Coronel</title>
+    
+    <!-- Metadatos de Instalación PWA y Configuración de Ícono -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Bomberos 5ta">
     <meta name="theme-color" content="#0f172a">
+    <link rel="icon" type="image/png" href="logo5ta.png">
     <link rel="apple-touch-icon" href="logo5ta.png">
     
     <!-- Librerías Externas: Escáner QR, Generador QR -->
@@ -49,6 +53,10 @@
         #qr-reader-container { display: none; background: #0f172a; padding: 10px; border-radius: 8px; border: 1px dashed var(--accent); margin-bottom: 10px; }
         #qr-reader { width: 100%; }
 
+        /* ESTRUCTURA NEUMÁTICOS Y PERIMETRAL */
+        .tire-card, .side-card { background: #0f172a; border: 1px solid var(--border); border-radius: 8px; padding: 10px; margin-bottom: 10px; }
+        .sub-title { font-size: 0.82rem; font-weight: bold; color: #38bdf8; margin-bottom: 8px; display: block; }
+
         /* CHECKLIST SEGMENTADO Y EVIDENCIAS */
         .check-item { border-bottom: 1px solid #33415560; padding: 10px 0; }
         .check-item:last-child { border-bottom: none; }
@@ -78,7 +86,7 @@
     <!-- CABECERA FIXA DE LA UNIDAD -->
     <div class="header">
         <div class="header-brand">
-            <img src="logo5ta.png" alt="5ta Compañía">
+            <img src="logo5ta.png" alt="5ta Compañía" id="app-logo">
             <div>
                 <div class="header-title">Quinta Compañía de Coronel</div>
                 <div class="header-subtitle">Sistema de Inspección de Material Mayor</div>
@@ -103,7 +111,7 @@
                         <option value="">-- Seleccionar Unidad Manualmente --</option>
                         <option value="B-1">Unidad B-1 (Spartan Metro Star)</option>
                         <option value="R-1">Unidad R-1 (Rescate Técnico)</option>
-                        <option value="Z-1">Unidad Z-1 (Cisterna)</option>
+                        <option value="Z-1">Unidad Z-1 (Cisterna Doble Eje)</option>
                     </select>
                     <button class="btn" style="width: auto; margin-top:0; padding: 0 15px;" onclick="iniciarEscanerQR()" title="Escanear QR de la Cabina">📷 QR</button>
                 </div>
@@ -118,46 +126,65 @@
             <div class="field"><label>Kilometraje Actual:</label><input type="number" id="km_actual" placeholder="Ej: 48500" oninput="calcularMantencion()"></div>
             <div class="field"><label>Km Última Mantención:</label><input type="number" id="km_mantencion" value="45000" oninput="calcularMantencion()"></div>
             
+            <div class="field full"><label>Horómetro Actual (Horas Motor):</label><input type="number" id="horometro" placeholder="Ej: 1250 hrs"></div>
+
             <div class="field full">
                 <div id="status-mantencion" class="alert-status alert-ok">Estado Mantenimiento: Esperando Kilometraje...</div>
             </div>
         </div>
     </div>
 
-    <!-- MÓDULO 2: CONTROL DE NEUMÁTICOS Y EVIDENCIA -->
+    <!-- MÓDULO 2: CONTROL DE NEUMÁTICOS, PRESIÓN Y ALTURA DE HUELLA (DOBLE RODADO / EJE) -->
     <div class="box">
-        <div class="box-title">2. Control de Presión de Neumáticos (PSI)</div>
-        <div class="grid">
-            <div class="field"><label>Delantero Izquierdo (PSI):</label><input type="number" id="psi_di" placeholder="110"></div>
-            <div class="field"><label>Delantero Derecho (PSI):</label><input type="number" id="psi_dd" placeholder="110"></div>
-            <div class="field"><label>Trasero Izquierdo (PSI):</label><input type="number" id="psi_ti" placeholder="110"></div>
-            <div class="field"><label>Trasero Derecho (PSI):</label><input type="number" id="psi_td" placeholder="110"></div>
-            <div class="field full">
-                <label>Hallazgos / Desgaste / Deformaciones en Neumáticos:</label>
-                <textarea id="obs_neumaticos" rows="2" placeholder="Describa si existen cortes, objetos incrustados o bajo nivel..."></textarea>
-            </div>
-            <div class="field full">
-                <label>Foto Evidencia Neumáticos (Opcional / Hallazgo):</label>
-                <input type="file" id="foto_neumaticos" accept="image/*" capture="environment">
-            </div>
+        <div class="box-title">2. Control de Neumáticos (Presión, Huella y Fotos)</div>
+        
+        <div class="field full">
+            <label>Configuración de Rodado:</label>
+            <select id="config_rodado" onchange="toggleRodado(this.value)">
+                <option value="simple">Rodado Simple (4 Neumáticos)</option>
+                <option value="doble">Doble Rodado / Doble Eje (6 Neumáticos)</option>
+            </select>
+        </div>
+
+        <div id="contenedor-neumaticos">
+            <!-- Renderizado dinámico vía JavaScript -->
         </div>
     </div>
 
-    <!-- MÓDULO 3: INSPECCIÓN PERIMETRAL EXTERIOR -->
+    <!-- MÓDULO 3: INSPECCIÓN PERIMETRAL EXTERIOR POR LADOS (4 REGISTROS) -->
     <div class="box">
-        <div class="box-title">3. Inspección Perimetral Exterior (4 Lados)</div>
-        <div class="grid">
-            <div class="field full">
-                <label>Estado Carrocería / Espejos / Cortinas:</label>
-                <select id="est_exterior">
-                    <option value="OK">OK - Sin Novedades Visuales</option>
-                    <option value="NOK">NOK - Con Daños / Rayones / Deformaciones</option>
-                </select>
-            </div>
-            <div class="field full">
-                <label>Adjuntar Fotos Exterior (Frontal / Laterales / Posterior):</label>
-                <input type="file" id="fotos_exterior" accept="image/*" capture="environment" multiple>
-            </div>
+        <div class="box-title">3. Inspección Perimetral Exterior (Fotos y Hallazgos por Lado)</div>
+        
+        <!-- Lado Frontal -->
+        <div class="side-card">
+            <span class="sub-title">1. Lado Frontal (Cabina / Luces / Parachoques)</span>
+            <div class="field"><label>Fotografía General Lado Frontal:</label><input type="file" id="foto_frontal" accept="image/*" capture="environment"></div>
+            <div class="field"><label>Hallazgos / Observaciones:</label><textarea id="obs_frontal" rows="2" placeholder="Describa si existen abolladuras, parabrisas trizado, luces dañadas..."></textarea></div>
+            <div class="field"><label>Foto Evidencia Hallazgo (Opcional):</label><input type="file" id="foto_hallazgo_frontal" accept="image/*" capture="environment"></div>
+        </div>
+
+        <!-- Lado Lateral Izquierdo -->
+        <div class="side-card">
+            <span class="sub-title">2. Lado Lateral Izquierdo (Cortinas / Cajones / Espejo)</span>
+            <div class="field"><label>Fotografía General Lado Izquierdo:</label><input type="file" id="foto_izq" accept="image/*" capture="environment"></div>
+            <div class="field"><label>Hallazgos / Observaciones:</label><textarea id="obs_izq" rows="2" placeholder="Describa rayones, cortinas trabadas, señalética..."></textarea></div>
+            <div class="field"><label>Foto Evidencia Hallazgo (Opcional):</label><input type="file" id="foto_hallazgo_izq" accept="image/*" capture="environment"></div>
+        </div>
+
+        <!-- Lado Lateral Derecho -->
+        <div class="side-card">
+            <span class="sub-title">3. Lado Lateral Derecho (Cortinas / Cajones / Espejo)</span>
+            <div class="field"><label>Fotografía General Lado Derecho:</label><input type="file" id="foto_der" accept="image/*" capture="environment"></div>
+            <div class="field"><label>Hallazgos / Observaciones:</label><textarea id="obs_der" rows="2" placeholder="Describa detalles observados en el costado derecho..."></textarea></div>
+            <div class="field"><label>Foto Evidencia Hallazgo (Opcional):</label><input type="file" id="foto_hallazgo_der" accept="image/*" capture="environment"></div>
+        </div>
+
+        <!-- Lado Posterior -->
+        <div class="side-card">
+            <span class="sub-title">4. Lado Posterior (Escala / Salidas / Luces Traseras)</span>
+            <div class="field"><label>Fotografía General Lado Posterior:</label><input type="file" id="foto_post" accept="image/*" capture="environment"></div>
+            <div class="field"><label>Hallazgos / Observaciones:</label><textarea id="obs_post" rows="2" placeholder="Describa golpes, fugas en tapones Storz, luces traseras..."></textarea></div>
+            <div class="field"><label>Foto Evidencia Hallazgo (Opcional):</label><input type="file" id="foto_hallazgo_post" accept="image/*" capture="environment"></div>
         </div>
     </div>
 
@@ -194,14 +221,12 @@
 </div>
 
 <script>
-    /* BD Unidades Preconfiguradas para Carga Rápida/QR */
     const bdUnidades = {
-        "B-1": { chasis: "SPARTAN-MS-2018-9921", modelo: "Bomba Urbano Pesado MetroStar" },
-        "R-1": { chasis: "MAN-TGM-2021-4402", modelo: "Rescate Técnico Heavy Rescue" },
-        "Z-1": { chasis: "FREIGHTLINER-M2-2015", modelo: "Cisterna 10.000 Litros" }
+        "B-1": { chasis: "SPARTAN-MS-2018-9921", modelo: "Bomba Urbano Pesado MetroStar", rodado: "simple" },
+        "R-1": { chasis: "MAN-TGM-2021-4402", modelo: "Rescate Técnico Heavy Rescue", rodado: "simple" },
+        "Z-1": { chasis: "FREIGHTLINER-M2-2015", modelo: "Cisterna 10.000 Litros Doble Eje", rodado: "doble" }
     };
 
-    /* Items Checklist Segmentados */
     const itemsMotor = [
         "Nivel de Aceite de Motor", "Nivel de Refrigerante", "Correas de Mando", 
         "Presión Sistema de Aire", "Fugas de Fluido bajo Motor", "Estado Baterías / Bornes",
@@ -222,14 +247,44 @@
 
     let html5QrcodeScanner = null;
 
-    /* Renderizado inicial de componentes */
     window.onload = () => {
         renderSeg(itemsMotor, 'seg-motor');
         renderSeg(itemsBomba, 'seg-bomba');
         renderSeg(itemsCabina, 'seg-cabina');
+        toggleRodado('simple');
         initCanvas();
         generarManifestDinamico();
     };
+
+    /* Renderizado de Neumáticos según Rodado */
+    function toggleRodado(tipo) {
+        const c = document.getElementById('contenedor-neumaticos');
+        const lista = (tipo === 'doble') ? [
+            { id: 'di', label: '1. Delantero Izquierdo' },
+            { id: 'dd', label: '2. Delantero Derecho' },
+            { id: 'tie', label: '3. Trasero Izquierdo (Exterior)' },
+            { id: 'tii', label: '4. Trasero Izquierdo (Interior)' },
+            { id: 'tde', label: '5. Trasero Derecho (Exterior)' },
+            { id: 'tdi', label: '6. Trasero Derecho (Interior)' }
+        ] : [
+            { id: 'di', label: '1. Delantero Izquierdo' },
+            { id: 'dd', label: '2. Delantero Derecho' },
+            { id: 'ti', label: '3. Trasero Izquierdo' },
+            { id: 'td', label: '4. Trasero Derecho' }
+        ];
+
+        c.innerHTML = lista.map(item => `
+            <div class="tire-card">
+                <span class="sub-title">${item.label}</span>
+                <div class="grid">
+                    <div class="field"><label>Presión (PSI):</label><input type="number" id="psi_${item.id}" placeholder="110"></div>
+                    <div class="field"><label>Huella (mm):</label><input type="number" step="0.1" id="huella_${item.id}" placeholder="8.5"></div>
+                    <div class="field full"><label>Hallazgos / Estado:</label><input type="text" id="obs_${item.id}" placeholder="Sin novedades o describir problema..."></div>
+                    <div class="field full"><label>Foto Evidencia Rueda:</label><input type="file" id="foto_${item.id}" accept="image/*" capture="environment"></div>
+                </div>
+            </div>
+        `).join('');
+    }
 
     function renderSeg(list, elementId) {
         const el = document.getElementById(elementId);
@@ -254,20 +309,40 @@
         document.getElementById(`evid-${id}`).style.display = (val === 'NOK') ? 'block' : 'none';
     }
 
-    /* Lógica de Selección y Escáner QR de Unidad */
     function cargarDatosUnidadManual(codigo) {
         if (bdUnidades[codigo]) {
             document.getElementById('unidad_chasis').value = bdUnidades[codigo].chasis;
             document.getElementById('unidad_modelo').value = bdUnidades[codigo].modelo;
+            document.getElementById('config_rodado').value = bdUnidades[codigo].rodado;
+            toggleRodado(bdUnidades[codigo].rodado);
         } else {
             document.getElementById('unidad_chasis').value = '';
             document.getElementById('unidad_modelo').value = '';
         }
     }
 
-    /* SOLUCIÓN FALLA 2: Control robusto de cámara, conexión CDN y permisos en pantalla */
+    /* Manejo del Contador de Mantención (Notificación Verde/Rojo) */
+    function calcularMantencion() {
+        const actual = parseInt(document.getElementById('km_actual').value) || 0;
+        const ult = parseInt(document.getElementById('km_mantencion').value) || 0;
+        const diff = actual - ult;
+        const limite = 5000;
+        const restantes = limite - diff;
+        const box = document.getElementById('status-mantencion');
+
+        if (diff >= limite) {
+            box.className = "alert-status alert-warn";
+            box.innerText = `¡ALERTA MANTENCIÓN VENCIDA! Excedido en ${diff - limite} km (Límite: 5.000 km)`;
+        } else if (actual > 0) {
+            box.className = "alert-status alert-ok";
+            box.innerText = `Mantención al día. Faltan ${restantes} km para la próxima mantención.`;
+        } else {
+            box.className = "alert-status alert-ok";
+            box.innerText = `Estado Mantenimiento: Esperando Kilometraje...`;
+        }
+    }
+
     async function iniciarEscanerQR() {
-        // 1. Verificar si la librería del CDN cargó correctamente
         if (typeof Html5Qrcode === "undefined") {
             alert("No se pudo cargar el motor del escáner QR. Verifique su conexión o utilice la Selección Manual.");
             return;
@@ -277,7 +352,6 @@
         container.style.display = 'block';
 
         try {
-            // 2. Verificar permisos o disponibilidad de dispositivos
             const devices = await Html5Qrcode.getCameras();
             if (!devices || devices.length === 0) {
                 alert("No se detectó ninguna cámara disponible en el dispositivo. Use la selección manual.");
@@ -299,12 +373,10 @@
                     }
                     detenerEscanerQR();
                 },
-                (errorMessage) => {
-                    // Errores de lectura cuadro a cuadro (se omiten silenciosamente)
-                }
+                () => {}
             );
         } catch (err) {
-            alert("Acceso a cámara denegado o no disponible en este dispositivo/navegador. Por favor seleccione la unidad manualmente.");
+            alert("Acceso a cámara denegado o no disponible en este navegador. Seleccione la unidad manualmente.");
             container.style.display = 'none';
         }
     }
@@ -320,25 +392,6 @@
             });
         } else {
             document.getElementById('qr-reader-container').style.display = 'none';
-        }
-    }
-
-    /* Alerta y cálculo de Mantenimiento */
-    function calcularMantencion() {
-        const actual = parseInt(document.getElementById('km_actual').value) || 0;
-        const ult = parseInt(document.getElementById('km_mantencion').value) || 0;
-        const diff = actual - ult;
-        const box = document.getElementById('status-mantencion');
-
-        if (diff >= 5000) {
-            box.className = "alert-status alert-warn";
-            box.innerText = `¡ALERTA MANTENCIÓN! Excedido en ${diff} km (Límite: 5.000 km)`;
-        } else if (diff < 0) {
-            box.className = "alert-status alert-ok";
-            box.innerText = `Lectura de kilometraje en rango.`;
-        } else {
-            box.className = "alert-status alert-ok";
-            box.innerText = `Mantención al día (${diff} km recorridos de 5.000 km)`;
         }
     }
 
@@ -368,7 +421,7 @@
     }
     function limpiarFirma() { ctx.clearRect(0, 0, canvas.width, canvas.height); }
 
-    /* Generación de Manifest para PWA Instalable */
+    /* Generación del Manifest de PWA e Ícono Oficial */
     function generarManifestDinamico() {
         const manifest = {
             "name": "Inspección 5ta Coronel",
@@ -377,7 +430,10 @@
             "display": "standalone",
             "background_color": "#0f172a",
             "theme_color": "#0f172a",
-            "icons": [{ "src": "logo5ta.png", "sizes": "192x192", "type": "image/png" }]
+            "icons": [
+                { "src": "logo5ta.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+                { "src": "logo5ta.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+            ]
         };
         const blob = new Blob([JSON.stringify(manifest)], {type: 'application/json'});
         const link = document.createElement('link');
@@ -386,7 +442,6 @@
         document.head.appendChild(link);
     }
 
-    /* Procesamiento Local y Guardado de Inspección */
     function guardarInspeccionLocal() {
         const unidad = document.getElementById('select_unidad').value;
         const inspector = document.getElementById('inspector').value;
@@ -396,13 +451,13 @@
             return;
         }
 
-        const payload = `5TA-CORONEL|UNIDAD:${unidad}|INSPECTOR:${inspector}|KM:${document.getElementById('km_actual').value}|FECHA:${new Date().toISOString().split('T')[0]}`;
+        const payload = `5TA-CORONEL|UNIDAD:${unidad}|INSPECTOR:${inspector}|KM:${document.getElementById('km_actual').value}|HORAS:${document.getElementById('horometro').value}|FECHA:${new Date().toISOString().split('T')[0]}`;
         
         document.getElementById('qr-resumen-container').style.display = 'block';
         document.getElementById('qrcode').innerHTML = '';
         new QRCode(document.getElementById("qrcode"), { text: payload, width: 128, height: 128 });
 
-        alert("Inspección de la unidad " + unidad + " guardada exitosamente en el dispositivo.");
+        alert("Inspección de la unidad " + unidad + " guardada en el dispositivo.");
     }
 </script>
 </body>
