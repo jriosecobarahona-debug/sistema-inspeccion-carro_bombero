@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Reporte Técnico - Cierre de Desviaciones</title>
+    <style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; margin: 30px; background-color: #f4f6f9; color: #333; }
+        .card { background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); max-width: 800px; margin: auto; }
+        .header { border-bottom: 3px solid #d9534f; padding-bottom: 10px; margin-bottom: 20px; }
+        .header h1 { margin: 0; color: #d9534f; font-size: 24px; }
+        .header p { margin: 5px 0 0; color: #666; font-size: 14px; }
+        .section-title { font-size: 16px; font-weight: bold; margin-top: 20px; color: #1a252f; border-left: 4px solid #007bff; padding-left: 8px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 10px; background: #fafafa; padding: 15px; border-radius: 6px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th { background-color: #2c3e50; color: white; padding: 10px; text-align: left; font-size: 14px; }
+        .footer { margin-top: 30px; text-align: center; font-size: 12px; color: #777; border-top: 1px solid #ddd; padding-top: 10px; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="header">
+            <h1>🚒 DUOTECH TELEMETRÍA - REPORTE TÉCNICO</h1>
+            <p>Informe de Inspección Inmutable y Cierre de Desviaciones Operativas</p>
+        </div>
+
+        <div class="section-title">Datos del Vehículo e Inspección</div>
+        <div class="grid">
+            <div><strong>Unidad:</strong> B-1</div>
+            <div><strong>Fecha Inspección:</strong> N/A</div>
+            <div><strong>Bombero Inspector:</strong> N/A</div>
+            <div><strong>Estado Final:</strong> <span style="color: #d9534f; font-weight: bold;">CON_OBSERVACIONES</span></div>
+        </div>
+
+        <div class="section-title">Detalle de Solicitudes de Atención Urgente (OTs)</div>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID OT</th>
+                    <th>Origen</th>
+                    <th>Descripción de la Falla</th>
+                    <th>Estado</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+        <tr>
+            <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold;">OT #1</td>
+            <td style="padding: 10px; border: 1px solid #ddd;">Neumático Delantero Derecho</td>
+            <td style="padding: 10px; border: 1px solid #ddd;">Presión: 80.0 PSI | Profundidad: 2.0 mm</td>
+            <td style="padding: 10px; border: 1px solid #ddd; color: #d9534f; font-weight: bold;">RESUELTO</td>
+        </tr>
+        
+        <tr>
+            <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold;">OT #2</td>
+            <td style="padding: 10px; border: 1px solid #ddd;">Checklist Ítem #8 - Luces de emergencia y destelladores (Balizas)</td>
+            <td style="padding: 10px; border: 1px solid #ddd;">Baliza posterior derecha quemada</td>
+            <td style="padding: 10px; border: 1px solid #ddd; color: #d9534f; font-weight: bold;">RESUELTO</td>
+        </tr>
+        
+            </tbody>
+        </table>
+
+        <div class="section-title" style="margin-top:25px;">Firma Digital de Inmutabilidad</div>
+        <div style="background: #eef2f7; padding: 12px; font-family: monospace; font-size: 11px; word-break: break-all; border-radius: 4px; margin-top: 8px;">
+            <strong>HASH SHA-256:</strong> REGISTRO_FIRMADONUM_OK_001
+        </div>
+
+        <div class="footer">
+            Documento generado automáticamente por el Sistema de Telemetría Operativa Duotech.
+        </div>
+    </div>
+</body>
+</html>

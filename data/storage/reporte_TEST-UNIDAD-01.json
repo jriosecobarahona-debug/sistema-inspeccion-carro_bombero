@@ -1,0 +1,30 @@
+{
+    "empresa": "DuoTech Telemetry",
+    "tipo_documento": "Informe de Trazabilidad y Mantenimiento",
+    "unidad": "TEST-UNIDAD-01",
+    "total_eventos": 2,
+    "eventos": [
+        {
+            "id": 2,
+            "codigo_unidad": "TEST-UNIDAD-01",
+            "tipo_maquina": "Genérico",
+            "operador": "Inspector Validación",
+            "horometro_actual": 100.5,
+            "latitud": -36.8,
+            "longitud": -73.0,
+            "observaciones": "Prueba de Validación Etapa 1",
+            "timestamp": "2026-09-03 01:25:30"
+        },
+        {
+            "id": 1,
+            "codigo_unidad": "TEST-UNIDAD-01",
+            "tipo_maquina": "Genérico",
+            "operador": "Inspector Validación",
+            "horometro_actual": 100.5,
+            "latitud": -36.8,
+            "longitud": -73.0,
+            "observaciones": "Prueba de Validación Etapa 1",
+            "timestamp": "2026-09-03 01:25:11"
+        }
+    ]
+}
