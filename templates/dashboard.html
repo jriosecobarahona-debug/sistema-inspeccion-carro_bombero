@@ -16,7 +16,6 @@
     <header class="bg-slate-900 text-white shadow-lg sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
             <div class="flex items-center space-x-3">
-                <!-- Escudo Oficial de la Quinta Compañía de Bomberos de Coronel -->
                 <img src="logo5ta.png" alt="Escudo Quinta Compañía de Bomberos Coronel" class="w-12 h-12 object-contain drop-shadow-md">
                 <div>
                     <h1 class="text-xl font-bold leading-tight tracking-wide uppercase">Cuerpo de Bomberos</h1>
@@ -31,7 +30,7 @@
 
     <main class="max-w-7xl mx-auto px-4 py-6 space-y-6">
 
-        <!-- LECTURA RÁPIDA (TARJETAS SEMÁFORO CORREGIDAS) -->
+        <!-- LECTURA RÁPIDA (TARJETAS SEMÁFORO) -->
         <section class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
                 <div>
@@ -61,12 +60,12 @@
             </div>
         </section>
 
-        <!-- TABLA CENTRAL DE UNIDADES E INSPECCIONES APP -->
+        <!-- TABLA CENTRAL DE UNIDADES -->
         <section class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
             <div class="p-5 border-b border-slate-100 flex justify-between items-center">
                 <div>
-                    <h2 class="text-lg font-bold text-slate-800">Estado de Unidades & Reportes de Inspección App</h2>
-                    <p class="text-xs text-slate-400">Sincronizado en tiempo real con checklist de maquinistas en terreno</p>
+                    <h2 class="text-lg font-bold text-slate-800">Estado de Unidades & Único Reporte de Terreno</h2>
+                    <p class="text-xs text-slate-400">Sincronizado en tiempo real con la App móvil de Maquinistas</p>
                 </div>
                 <span class="text-xs bg-slate-100 text-slate-600 font-mono px-2.5 py-1 rounded-md border border-slate-200">Sello SHA-256 Activo</span>
             </div>
@@ -85,6 +84,43 @@
                         </tr>
                     </thead>
                     <tbody id="tabla-unidades" class="divide-y divide-slate-100">
+                        <!-- Carga dinámica JS -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- SECCIÓN NUEVA: HISTORIAL Y BITÁCORA DE INSPECCIONES -->
+        <section class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+            <div class="p-5 border-b border-slate-100 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+                <div>
+                    <h3 class="text-lg font-bold text-slate-800">📜 Historial Bitácora de Inspecciones & Mantenciones</h3>
+                    <p class="text-xs text-slate-500">Registro histórico inalterable de todos los informes recibidos de la App y OTs cerradas</p>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <label class="text-xs font-bold text-slate-600">Filtrar por Carro:</label>
+                    <select id="filtro-historial" onchange="renderHistorial()" class="border border-slate-300 text-xs rounded-lg p-1.5 focus:outline-none focus:ring-2 focus:ring-slate-800">
+                        <option value="TODOS">Todos los carros</option>
+                        <option value="B-1">Carro B-1</option>
+                        <option value="R-1">Carro R-1</option>
+                        <option value="Z-1">Carro Z-1</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse text-sm">
+                    <thead>
+                        <tr class="bg-slate-50 text-slate-600 uppercase text-xs border-b border-slate-200">
+                            <th class="p-3">Fecha / Hora</th>
+                            <th class="p-3">Unidad</th>
+                            <th class="p-3">Tipo de Registro</th>
+                            <th class="p-3">Responsable / Maquinista</th>
+                            <th class="p-3">Resumen / Observación</th>
+                            <th class="p-3 text-center">Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-historial" class="divide-y divide-slate-100">
                         <!-- Carga dinámica JS -->
                     </tbody>
                 </table>
@@ -162,7 +198,7 @@
             </div>
             <div class="bg-slate-50 px-6 py-3 flex justify-between items-center border-t border-slate-100">
                 <button id="btn-imprimir-informe" onclick="" class="bg-red-700 hover:bg-red-800 text-white text-xs font-bold px-4 py-2 rounded-lg flex items-center space-x-2 shadow transition">
-                    <span>🖨️ Imprimir Informe Inspección (PDF)</span>
+                    <span>🖨️ Imprimir Informe Completo (PDF)</span>
                 </button>
                 <button onclick="cerrarModal()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-bold px-4 py-2 rounded-lg transition">
                     Cerrar Detalle
@@ -233,6 +269,42 @@
             }
         ];
 
+        // HISTORIAL BASE DE REGISTROS ANTERIORES
+        let historialRegistros = [
+            {
+                id: "B-1",
+                fecha: "2026-09-09 08:30",
+                tipo: "Checklist App Terreno",
+                responsable: "Maquinista Donoso",
+                resumen: "Se detecta fuga en cuerpo de bomba. Carro puesto Fuera de Servicio.",
+                hash: "a8f9c210b4e571c3"
+            },
+            {
+                id: "R-1",
+                fecha: "2026-09-09 07:45",
+                tipo: "Checklist App Terreno",
+                responsable: "Vol. Silva",
+                resumen: "Checklist diario conforme. Unidad Operativa.",
+                hash: "f47b1902c38e91d2"
+            },
+            {
+                id: "Z-1",
+                fecha: "2026-09-08 19:10",
+                tipo: "Checklist App Terreno",
+                responsable: "Maquinista Pérez",
+                resumen: "Relleno preventivo de refrigerante. Operativo.",
+                hash: "e10293847586a9b0"
+            },
+            {
+                id: "B-1",
+                fecha: "2026-08-15 11:20",
+                tipo: "Cierre de OT / Taller",
+                responsable: "Inspector de M.M.",
+                resumen: "Mantención de 100 horas de bomba realizada en Maestranza Central. OT #OT-B1-2026-08 CERRADA.",
+                hash: "c90128471b82193f"
+            }
+        ];
+
         document.getElementById('current-time').innerText = new Date().toLocaleString('es-CL');
 
         function renderTabla() {
@@ -243,7 +315,6 @@
                 const tr = document.createElement('tr');
                 tr.className = "border-b border-slate-100 hover:bg-slate-50 transition";
 
-                // LOGICA DE COLORES DE BADGES CORREGIDA
                 const badge = (val) => {
                     if (val.includes("Al Día") || val.includes("En Regla")) {
                         return `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800">🟢 ${val}</span>`;
@@ -281,6 +352,39 @@
             });
 
             actualizarSelectorOT();
+            renderHistorial();
+        }
+
+        function renderHistorial() {
+            const filtro = document.getElementById('filtro-historial').value;
+            const tbody = document.getElementById('tabla-historial');
+            tbody.innerHTML = '';
+
+            const listaFiltrada = filtro === "TODOS" 
+                ? historialRegistros 
+                : historialRegistros.filter(h => h.id === filtro);
+
+            listaFiltrada.forEach(h => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50 transition border-b border-slate-100 text-xs";
+                tr.innerHTML = `
+                    <td class="p-3 font-mono text-slate-500">${h.fecha}</td>
+                    <td class="p-3 font-bold text-slate-800">${h.id}</td>
+                    <td class="p-3">
+                        <span class="px-2 py-0.5 rounded ${h.tipo.includes('Cierre') ? 'bg-blue-100 text-blue-800' : 'bg-slate-100 text-slate-700'} font-semibold">
+                            ${h.tipo}
+                        </span>
+                    </td>
+                    <td class="p-3 text-slate-700">${h.responsable}</td>
+                    <td class="p-3 text-slate-600">${h.resumen}</td>
+                    <td class="p-3 text-center">
+                        <button onclick="verInspeccionApp('${h.id}')" class="text-slate-800 hover:text-red-700 font-bold underline">
+                            Revisar PDF
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
         }
 
         function actualizarSelectorOT() {
@@ -315,6 +419,8 @@
 
         function verInspeccionApp(id) {
             const u = unidades.find(item => item.id === id);
+            if (!u) return;
+
             document.getElementById('modal-titulo').innerText = `Informe Inspección App - ${u.nombre}`;
             document.getElementById('modal-sub').innerText = `Folio OT: ${u.folioOT} | Sello Digital SHA-256: ${u.hash}`;
 
@@ -332,7 +438,7 @@
                     <p><strong>Estado Reportado:</strong> <span class="font-bold ${u.estado === 'Operativo' ? 'text-emerald-600' : 'text-red-600'}">${u.estado}</span></p>
                 </div>
                 <div>
-                    <h4 class="font-bold text-slate-800 text-xs uppercase mb-2">Checklist de Puntos Críticos:</h4>
+                    <h4 class="font-bold text-slate-800 text-xs uppercase mb-2">Checklist Completo enviado desde Terreno:</h4>
                     <div class="bg-white border border-slate-200 rounded-lg p-3 text-xs">
                         ${itemsHTML}
                     </div>
@@ -385,7 +491,7 @@
 
             const y1 = doc.lastAutoTable.finalY + 8;
             doc.setFont("helvetica", "bold");
-            doc.text("2. Detalle de Puntos Evaluados", 14, y1);
+            doc.text("2. Detalle de Puntos Evaluados en Terreno", 14, y1);
 
             const bodyItems = u.checklistDetalle.map(i => [i.item, i.estado]);
 
@@ -443,7 +549,18 @@
             unidadMod.estado = "Operativo";
             unidadMod.rt = "Al Día";
             unidadMod.mantencion = "En Regla";
-            unidadMod.hallazgos = `OT #${unidadMod.folioOT} Cerrada. Recepción exitosa de taller '${taller}' (${fIngreso} a ${fSalida}). ${archivos.length} adjunto(s) validados. Recepcionó: ${responsable}.`;
+            const detalleCierre = `OT #${unidadMod.folioOT} Cerrada. Recepción exitosa de taller '${taller}' (${fIngreso} a ${fSalida}). ${archivos.length} adjunto(s) validados. Recepcionó: ${responsable}.`;
+            unidadMod.hallazgos = detalleCierre;
+
+            // Agregar al historial de bitácora
+            historialRegistros.unshift({
+                id: unidadMod.id,
+                fecha: new Date().toISOString().replace('T', ' ').substring(0, 16),
+                tipo: "Cierre de OT / Taller",
+                responsable: responsable,
+                resumen: `Taller ${taller}. OT #${unidadMod.folioOT} CERRADA.`,
+                hash: unidadMod.hash
+            });
 
             const quedanFallas = unidades.some(u => u.estado === "Fuera de Servicio");
             if (!quedanFallas) {
