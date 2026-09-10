@@ -2,533 +2,438 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>PWA Inspección - 5ta Compañía Coronel</title>
-    
-    <!-- Enlace al Manifest e Íconos PWA -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control Terreno - Quinta Compañía</title>
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#0f172a">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="application-name" content="Bomberos 5ta">
-    <link rel="icon" type="image/png" sizes="192x192" href="logo5ta.png">
-    <link rel="icon" type="image/png" sizes="512x512" href="logo5ta.png">
-    
-    <!-- Compatibilidad iOS -->
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Bomberos 5ta">
-    <link rel="apple-touch-icon" href="logo5ta.png">
-    
-    <!-- Librerías Externas QR -->
-    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    
+    <meta name="theme-color" content="#ce1126">
+    <script src="https://cdn.jsdelivr.net/npm/html5-qrcode/html5-qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
     <style>
-        :root {
-            --bg: #0f172a; 
-            --card: #1e293b; 
-            --accent: #0284c7; 
-            --danger: #dc2626; 
-            --warning: #eab308;
-            --success: #16a34a;
-            --text: #f8fafc; 
-            --text-dim: #94a3b8; 
-            --border: #334155;
-        }
-        * { box-sizing: border-box; }
-        body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 12px; }
-        .container { max-width: 650px; margin: 0 auto; }
-        
-        /* CABECERA CON BOTÓN SALIR */
-        .header { display: flex; align-items: center; justify-content: space-between; background: var(--card); padding: 12px 15px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 15px; }
-        .header-brand { display: flex; align-items: center; gap: 12px; }
-        .header img { width: 44px; height: 44px; object-fit: contain; }
-        .header-title { font-size: 0.9rem; font-weight: bold; color: var(--text); }
-        .header-subtitle { font-size: 0.75rem; color: #38bdf8; }
-
-        .btn-exit { background: #334155; color: #f8fafc; border: 1px solid #475569; padding: 6px 12px; font-size: 0.75rem; font-weight: bold; border-radius: 6px; cursor: pointer; }
-        .btn-exit:hover { background: var(--danger); border-color: var(--danger); }
-
-        .box { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 15px; margin-bottom: 15px; }
-        .box-title { color: #38bdf8; font-weight: bold; font-size: 0.9rem; border-bottom: 1px solid var(--border); padding-bottom: 6px; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
-
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .field { display: flex; flex-direction: column; margin-bottom: 8px; }
-        .full { grid-column: span 2; }
-        label { font-size: 0.78rem; color: var(--text-dim); margin-bottom: 4px; font-weight: 500; }
-        input, select, textarea { background: #0f172a; border: 1px solid var(--border); color: var(--text); padding: 9px; border-radius: 6px; font-size: 0.85rem; width: 100%; }
-        input:focus, select:focus, textarea:focus { border-color: var(--accent); outline: none; }
-
-        /* ESCÁNER QR MODAL */
-        #qr-reader-container { display: none; background: #0f172a; padding: 10px; border-radius: 8px; border: 1px dashed var(--accent); margin-bottom: 10px; }
-        #qr-reader { width: 100%; }
-
-        /* ESTRUCTURA NEUMÁTICOS Y PERIMETRAL */
-        .tire-card, .side-card { background: #0f172a; border: 1px solid var(--border); border-radius: 8px; padding: 10px; margin-bottom: 10px; }
-        .sub-title { font-size: 0.82rem; font-weight: bold; color: #38bdf8; margin-bottom: 8px; display: block; }
-
-        /* CHECKLIST SEGMENTADO Y EVIDENCIAS */
-        .check-item { border-bottom: 1px solid #33415560; padding: 10px 0; }
-        .check-item:last-child { border-bottom: none; }
-        .check-row { display: flex; justify-content: space-between; align-items: center; }
-        .evidence-box { display: none; margin-top: 8px; background: #0f172a; padding: 10px; border-radius: 6px; border: 1px dashed var(--danger); }
-
-        /* CANVAS FIRMA */
-        #canvas-firma { background: #ffffff; border-radius: 6px; width: 100%; height: 130px; touch-action: none; cursor: crosshair; }
-
-        .btn { width: 100%; background: var(--accent); color: #fff; border: none; padding: 12px; font-weight: bold; border-radius: 8px; cursor: pointer; margin-top: 10px; font-size: 0.9rem; display: flex; align-items: center; justify-content: center; gap: 8px; }
-        .btn-secondary { background: #334155; color: var(--text); }
-        
-        .alert-status { padding: 12px; border-radius: 6px; font-size: 0.85rem; font-weight: bold; text-align: center; margin-top: 10px; transition: all 0.3s ease; }
-
-        /* CONTENEDOR CERTIFICADO SHA-256 Y QR */
-        #cert-container { text-align: center; margin-top: 15px; display: none; background: #ffffff; color: #000000; padding: 15px; border-radius: 8px; border: 2px solid var(--accent); }
-        .folio-header { font-size: 1.1rem; font-weight: bold; color: #0284c7; margin-bottom: 4px; }
-        .sha-box { font-family: monospace; font-size: 0.68rem; word-break: break-all; background: #f1f5f9; padding: 6px; border-radius: 4px; border: 1px solid #cbd5e1; margin: 8px 0; color: #334155; }
-
-        footer { text-align: center; color: var(--text-dim); font-size: 0.75rem; margin-top: 25px; padding-bottom: 15px; }
-        footer strong { color: #38bdf8; }
+        * { box-sizing: border-box; font-family: 'Segoe UI', Arial, sans-serif; }
+        body { background-color: #f4f6f9; margin: 0; padding: 15px; color: #333; }
+        .card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); max-width: 600px; margin: auto; }
+        .header { text-align: center; border-bottom: 2px solid #ce1126; padding-bottom: 10px; margin-bottom: 15px; }
+        .header img { width: 70px; height: auto; }
+        h2 { margin: 5px 0; color: #1a252f; font-size: 20px; }
+        h3 { border-bottom: 1px solid #ddd; padding-bottom: 5px; color: #ce1126; margin-top: 20px; }
+        label { font-weight: bold; display: block; margin-top: 12px; color: #333; font-size: 14px; }
+        select, input, textarea { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ccc; border-radius: 5px; font-size: 14px; }
+        button { background-color: #ce1126; color: white; border: none; padding: 12px; width: 100%; border-radius: 5px; margin-top: 15px; font-weight: bold; font-size: 16px; cursor: pointer; }
+        button:hover { background-color: #a80d1e; }
+        .btn-secondary { background-color: #34495e; margin-top: 5px; }
+        .btn-secondary:hover { background-color: #2c3e50; }
+        .btn-exit { background-color: #7f8c8d; margin-top: 25px; }
+        .btn-exit:hover { background-color: #626567; }
+        .status-box { margin-top: 15px; padding: 12px; border-radius: 5px; text-align: center; font-size: 13px; font-weight: bold; }
+        .grid-neumaticos { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+        .neumatico-item { background: #f8f9fa; padding: 10px; border: 1px solid #e9ecef; border-radius: 5px; }
+        .canvas-container { border: 1px solid #ccc; border-radius: 5px; margin-top: 5px; background: #fff; touch-action: none; }
+        canvas { width: 100%; height: 150px; display: block; }
+        #qr-reader { width: 100%; margin-top: 10px; border-radius: 5px; overflow: hidden; }
+        #qrcode-cert { display: flex; justify-content: center; margin-top: 15px; }
+        .checklist-group { background: #fafafa; padding: 10px; border-radius: 5px; margin-bottom: 10px; border: 1px solid #eee; }
+        .checklist-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .checklist-item select { width: 120px; margin-top: 0; }
     </style>
 </head>
 <body>
 
-<div class="container">
-
-    <!-- CABECERA CON BOTÓN CORREGIDO -->
+<div class="card">
     <div class="header">
-        <div class="header-brand">
-            <img src="logo5ta.png" alt="5ta Compañía" id="app-logo">
-            <div>
-                <div class="header-title">Quinta Compañía Coronel</div>
-                <div class="header-subtitle">Inspección de Material Mayor</div>
+        <img src="logo5ta.png" alt="Logo 5ta Compañía" onerror="this.style.display='none'">
+        <h2>Checklist Material Mayor</h2>
+        <small>Quinta Compañía de Bomberos</small>
+    </div>
+
+    <form id="formChecklist">
+        <!-- 1. Identificación y QR -->
+        <h3>1. Identificación de la Unidad</h3>
+        <button type="button" class="btn-secondary" onclick="iniciarEscanerQR()">📷 Escanear QR de Cabina</button>
+        <div id="qr-reader" style="display:none;"></div>
+
+        <label for="unidad">Unidad / Carro:</label>
+        <select id="unidad" onchange="actualizarConfiguracionCarro()" required>
+            <option value="">-- Seleccionar Unidad --</option>
+            <option value="B-1" data-chasis="CAMC-2018" data-rodado="6">Carro Bomba Urbano B-1</option>
+            <option value="R-1" data-chasis="MAN-2021" data-rodado="4">Unidad de Rescate R-1</option>
+        </select>
+
+        <label for="chasis">N° Chasis / Ficha:</label>
+        <input type="text" id="chasis" readonly placeholder="Se autocompleta con QR o Selección">
+
+        <label for="maquinista">Maquinista / Voluntario a Cargo:</label>
+        <input type="text" id="maquinista" placeholder="Nombre completo" required>
+
+        <label for="estado_operativo">Estado Operativo Inicial:</label>
+        <select id="estado_operativo">
+            <option value="Operativo">Operativo</option>
+            <option value="Fuera de Servicio">Fuera de Servicio</option>
+        </select>
+
+        <!-- 2. Control Perimetral y Neumáticos -->
+        <h3>2. Estado de Neumáticos</h3>
+        <div class="grid-neumaticos" id="contenedorNeumaticos">
+            <!-- Render dinámico según rodado (4 o 6) -->
+        </div>
+
+        <label for="foto_hallazgo">Fotografía de Inspección / Hallazgo:</label>
+        <input type="file" id="foto_hallazgo" accept="image/*" capture="environment">
+
+        <!-- 3. Checklist Segmentado -->
+        <h3>3. Inspección de Sistemas</h3>
+        
+        <div class="checklist-group">
+            <strong style="color:#2c3e50;">Motor y Niveles</strong>
+            <div class="checklist-item">
+                <span>Nivel de Aceite Motor</span>
+                <select class="chk-item" data-seccion="Motor" data-nombre="Aceite Motor"><option value="OK">OK</option><option value="FALLA">FALLA</option></select>
+            </div>
+            <div class="checklist-item">
+                <span>Nivel Refrigerante</span>
+                <select class="chk-item" data-seccion="Motor" data-nombre="Refrigerante"><option value="OK">OK</option><option value="FALLA">FALLA</option></select>
             </div>
         </div>
-        <button class="btn-exit" onclick="salirAplicacion()" type="button" title="Salir de la aplicación">✕ Salir</button>
-    </div>
 
-    <!-- BLOQUE 1: UNIDAD E INSPECTOR Y MANTENCIÓN -->
-    <div class="box">
-        <div class="box-title">1. Identificación de Unidad e Inspector</div>
-        
-        <div id="qr-reader-container">
-            <div id="qr-reader"></div>
-            <button class="btn btn-secondary" style="margin-top:8px;" onclick="detenerEscanerQR()">Cerrar Cámara</button>
-        </div>
-
-        <div class="grid">
-            <div class="field full">
-                <label>Unidad a Inspeccionar:</label>
-                <div style="display:flex; gap:8px;">
-                    <select id="select_unidad" onchange="cargarDatosUnidadManual(this.value)">
-                        <option value="">-- Seleccionar Unidad Manualmente --</option>
-                        <option value="B-1">Unidad B-1 (Spartan Metro Star)</option>
-                        <option value="R-1">Unidad R-1 (Rescate Técnico)</option>
-                        <option value="Z-1">Unidad Z-1 (Cisterna Doble Eje)</option>
-                    </select>
-                    <button class="btn" style="width: auto; margin-top:0; padding: 0 15px;" onclick="iniciarEscanerQR()" title="Escanear QR Cabina">📷 QR</button>
-                </div>
+        <div class="checklist-group">
+            <strong style="color:#2c3e50;">Bomba y Cuerpo de Agua</strong>
+            <div class="checklist-item">
+                <span>Presión Sistema de Aire</span>
+                <select class="chk-item" data-seccion="Bomba" data-nombre="Presión Aire"><option value="OK">OK</option><option value="FALLA">FALLA</option></select>
             </div>
-
-            <div class="field"><label>N° Chasis / Ficha:</label><input type="text" id="unidad_chasis" readonly placeholder="Auto-completado"></div>
-            <div class="field"><label>Modelo / Tipo:</label><input type="text" id="unidad_modelo" readonly placeholder="Auto-completado"></div>
-
-            <div class="field"><label>Inspector a Cargo:</label><input type="text" id="inspector" placeholder="Nombre completo"></div>
-            <div class="field"><label>RUT Inspector:</label><input type="text" id="rut" placeholder="12.345.678-9"></div>
-            
-            <div class="field"><label>Kilometraje Actual:</label><input type="number" id="km_actual" placeholder="Ej: 45900" oninput="calcularMantencion()"></div>
-            <div class="field"><label>Km Última Mantención / Límite:</label><input type="number" id="km_mantencion" value="45000" oninput="calcularMantencion()"></div>
-            
-            <div class="field full"><label>Horómetro Actual (Horas Motor):</label><input type="number" id="horometro" placeholder="Ej: 1250 hrs"></div>
-
-            <div class="field full">
-                <div id="status-mantencion" class="alert-status">Ingrese kilometraje actual y límite de mantención.</div>
+            <div class="checklist-item">
+                <span>Nivel Estanque Agua</span>
+                <select class="chk-item" data-seccion="Bomba" data-nombre="Estanque Agua"><option value="OK">OK</option><option value="FALLA">FALLA</option></select>
             </div>
         </div>
-    </div>
 
-    <!-- BLOQUE 2: CONTROL DE NEUMÁTICOS -->
-    <div class="box">
-        <div class="box-title">2. Control de Neumáticos (Presión, Huella y Fotos)</div>
-        
-        <div class="field full">
-            <label>Configuración de Rodado:</label>
-            <select id="config_rodado" onchange="toggleRodado(this.value)">
-                <option value="simple">Rodado Simple (4 Neumáticos)</option>
-                <option value="doble">Doble Rodado / Doble Eje (6 Neumáticos)</option>
-            </select>
+        <div class="checklist-group">
+            <strong style="color:#2c3e50;">Cabina y Luces</strong>
+            <div class="checklist-item">
+                <span>Luces de Emergencia</span>
+                <select class="chk-item" data-seccion="Cabina" data-nombre="Luces Emergencia"><option value="OK">OK</option><option value="FALLA">FALLA</option></select>
+            </div>
+            <div class="checklist-item">
+                <span>Sirena y Radio Base</span>
+                <select class="chk-item" data-seccion="Cabina" data-nombre="Sirena/Radio"><option value="OK">OK</option><option value="FALLA">FALLA</option></select>
+            </div>
         </div>
 
-        <div id="contenedor-neumaticos"></div>
-    </div>
+        <label for="hallazgos">Observaciones / Detalle de Hallazgos:</label>
+        <textarea id="hallazgos" rows="3" placeholder="Detalle fallas, niveles o novedades encontradas..."></textarea>
 
-    <!-- BLOQUE 3: INSPECCIÓN PERIMETRAL EXTERIOR -->
-    <div class="box">
-        <div class="box-title">3. Inspección Perimetral Exterior (Fotos y Hallazgos por Lado)</div>
-        
-        <div class="side-card">
-            <span class="sub-title">1. Lado Frontal (Cabina / Luces / Parachoques)</span>
-            <div class="field"><label>Fotografía General Lado Frontal:</label><input type="file" id="foto_frontal" accept="image/*" capture="environment"></div>
-            <div class="field"><label>Hallazgos / Observaciones:</label><textarea id="obs_frontal" rows="2" placeholder="Describa abolladuras, parabrisas trizado..."></textarea></div>
-            <div class="field"><label>Foto Evidencia Hallazgo (Opcional):</label><input type="file" id="foto_hallazgo_frontal" accept="image/*" capture="environment"></div>
+        <!-- 4. Firma Digital y Sello -->
+        <h3>4. Conformidad y Firma</h3>
+        <label>Firma Maquinista:</label>
+        <div class="canvas-container">
+            <canvas id="canvasFirma"></canvas>
         </div>
+        <button type="button" class="btn-secondary" onclick="limpiarFirma()">Limpiar Firma</button>
 
-        <div class="side-card">
-            <span class="sub-title">2. Lado Lateral Izquierdo (Cortinas / Cajones / Espejo)</span>
-            <div class="field"><label>Fotografía General Lado Izquierdo:</label><input type="file" id="foto_izq" accept="image/*" capture="environment"></div>
-            <div class="field"><label>Hallazgos / Observaciones:</label><textarea id="obs_izq" rows="2" placeholder="Describa rayones, cortinas trabadas..."></textarea></div>
-            <div class="field"><label>Foto Evidencia Hallazgo (Opcional):</label><input type="file" id="foto_hallazgo_izq" accept="image/*" capture="environment"></div>
-        </div>
+        <button type="submit" style="margin-top:25px;">Finalizar y Enviar Inspección</button>
+    </form>
 
-        <div class="side-card">
-            <span class="sub-title">3. Lado Lateral Derecho (Cortinas / Cajones / Espejo)</span>
-            <div class="field"><label>Fotografía General Lado Derecho:</label><input type="file" id="foto_der" accept="image/*" capture="environment"></div>
-            <div class="field"><label>Hallazgos / Observaciones:</label><textarea id="obs_der" rows="2" placeholder="Describa detalles observados..."></textarea></div>
-            <div class="field"><label>Foto Evidencia Hallazgo (Opcional):</label><input type="file" id="foto_hallazgo_der" accept="image/*" capture="environment"></div>
-        </div>
+    <div id="mensajeEstado" class="status-box" style="display: none;"></div>
+    <div id="qrcode-cert"></div>
 
-        <div class="side-card">
-            <span class="sub-title">4. Lado Posterior (Escala / Salidas / Luces Traseras)</span>
-            <div class="field"><label>Fotografía General Lado Posterior:</label><input type="file" id="foto_post" accept="image/*" capture="environment"></div>
-            <div class="field"><label>Hallazgos / Observaciones:</label><textarea id="obs_post" rows="2" placeholder="Describa golpes, fugas en tapones Storz..."></textarea></div>
-            <div class="field"><label>Foto Evidencia Hallazgo (Opcional):</label><input type="file" id="foto_hallazgo_post" accept="image/*" capture="environment"></div>
-        </div>
-    </div>
-
-    <!-- BLOQUE 4: CHECKLIST -->
-    <div class="box">
-        <div class="box-title">4. Checklist Operacional Segmentado</div>
-        
-        <strong style="color:#38bdf8; font-size:0.8rem; display:block; margin-top:5px;">A. Motor y Sistema Mecánico</strong>
-        <div id="seg-motor"></div>
-
-        <strong style="color:#38bdf8; font-size:0.8rem; margin-top:14px; display:block;">B. Cuerpo Bomba y Sistema de Agua</strong>
-        <div id="seg-bomba"></div>
-
-        <strong style="color:#38bdf8; font-size:0.8rem; margin-top:14px; display:block;">C. Cabina, Telecomunicaciones y Seguridad</strong>
-        <div id="seg-cabina"></div>
-    </div>
-
-    <!-- BLOQUE 5: FIRMA Y TRANSMISIÓN AUTOMÁTICA -->
-    <div class="box">
-        <div class="box-title">5. Conformidad, Firma Digital e Inspección</div>
-        <label>Firma del Inspector en Terreno:</label>
-        <canvas id="canvas-firma"></canvas>
-        <button style="background:transparent; color:var(--danger); border:none; font-size:0.75rem; cursor:pointer; padding:6px 0; font-weight:bold;" onclick="limpiarFirma()">Limpiar Firma Canvas</button>
-        
-        <button class="btn" onclick="procesarInspeccionSHA256()">Finalizar Registro, Certificar y Enviar</button>
-
-        <!-- CERTIFICADO CON FOLIO Y HASH -->
-        <div id="cert-container">
-            <div class="folio-header" id="cert-folio">FOLIO: 5TA-0000</div>
-            <div style="font-size:0.75rem; font-weight:bold; color:#64748b;">CERTIFICACIÓN CRIPTOGRÁFICA SHA-256</div>
-            <div class="sha-box" id="cert-sha">HASH: Calculando...</div>
-            <div id="qrcode" style="display:flex; justify-content:center; margin: 10px 0;"></div>
-            <span style="color:#0f172a; font-size:0.72rem; font-weight:bold; display:block;">Documento Validado e Inmutable</span>
-        </div>
-    </div>
-
-    <footer>Desarrollado por <strong>Soluciones DuoTech</strong></footer>
+    <button type="button" class="btn-exit" onclick="salirAplicacion()">🚪 Salir de la Aplicación</button>
 </div>
 
 <script>
-    const API_ENDPOINT = "https://api.duotech.cl/v1/inspecciones";
-
-    const bdUnidades = {
-        "B-1": { chasis: "SPARTAN-MS-2018-9921", modelo: "Bomba Urbano Pesado MetroStar", rodado: "simple" },
-        "R-1": { chasis: "MAN-TGM-2021-4402", modelo: "Rescate Técnico Heavy Rescue", rodado: "simple" },
-        "Z-1": { chasis: "FREIGHTLINER-M2-2015", modelo: "Cisterna 10.000 Litros Doble Eje", rodado: "doble" }
-    };
-
-    const itemsMotor = ["Nivel de Aceite de Motor", "Nivel de Refrigerante", "Correas de Mando", "Presión Sistema de Aire", "Fugas de Fluido bajo Motor", "Estado Baterías / Bornes", "Sistema de Escape / Silenciador", "Nivel de Combustible Diesel", "Nivel de AdBlue / DEF", "Transmisión Automática"];
-    const itemsBomba = ["Cuerpo de Bomba Succión/Impulsión", "Válvulas de Alivio y Paso", "Cebador Primario / Vacío", "Nivel Estanque de Agua", "Manómetros de Presión y Vacuómetro", "Coplas y Empaquetaduras Storz", "Sistema Espumógeno / Dosificador", "Salidas de Manguera Preconectadas", "Llaves de Drenaje Cuerpo Bomba", "Válvulas de Retención"];
-    const itemsCabina = ["Luces de Emergencia / Balizas", "Sirena Electrónica / Pato", "Radio VHF / UHF Operativa", "Cinturones de Seguridad", "Aseo y Limpieza Interior Cabina", "Cargadores Equipos Portátiles", "Fijación Soporte de ERA", "Matamoscas / Mástil de Iluminación", "Generador Eléctrico Auxiliar", "Herramientas de Entrada Forzada"];
-
+    const URL_API_CUARTEL = "http://192.168.1.139:5000/api/inspecciones";
     let html5QrcodeScanner = null;
+    let canvas = document.getElementById('canvasFirma');
+    let ctx = canvas.getContext('2d');
+    let dibujando = false;
 
-    window.onload = () => {
-        renderSeg(itemsMotor, 'seg-motor');
-        renderSeg(itemsBomba, 'seg-bomba');
-        renderSeg(itemsCabina, 'seg-cabina');
-        toggleRodado('simple');
-        initCanvas();
-        calcularMantencion();
-        registrarServiceWorker();
-    };
-
-    /* FUNCIÓN CORREGIDA PARA SALIR DE LA INTERFAZ */
-    function salirAplicacion() {
-        if (confirm("¿Está seguro de que desea salir de la inspección? Se limpiarán los datos no guardados.")) {
-            // 1. Limpiar firma e insumos del formulario
-            limpiarFirma();
-            document.querySelectorAll('input, select, textarea').forEach(input => input.value = '');
-
-            // 2. Detener escáner QR si estaba encendido
-            detenerEscanerQR();
-
-            // 3. Forzar salida/cierre de la PWA
-            window.close();
-
-            // 4. Redirección limpia a pantalla en blanco si el navegador impide window.close()
-            setTimeout(() => {
-                window.location.href = "about:blank";
-            }, 100);
-        }
-    }
-
-    function registrarServiceWorker() {
+    // Inicialización
+    document.addEventListener("DOMContentLoaded", () => {
+        ajustarCanvas();
+        actualizarConfiguracionCarro();
+        window.addEventListener("online", sincronizarPendientes);
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('./sw.js')
-                .then((reg) => console.log('Service Worker PWA registrado:', reg.scope))
-                .catch((err) => console.error('Error al registrar Service Worker:', err));
+            navigator.serviceWorker.register('sw.js').catch(err => console.log("SW Registro:", err));
         }
+    });
+
+    // Eventos de dibujo en Canvas (Firma Touch/Mouse)
+    function ajustarCanvas() {
+        let rect = canvas.getBoundingClientRect();
+        canvas.width = rect.width;
+        canvas.height = rect.height;
     }
 
-    function calcularMantencion() {
-        const actualVal = document.getElementById('km_actual').value;
-        const limiteVal = document.getElementById('km_mantencion').value;
-        const box = document.getElementById('status-mantencion');
+    canvas.addEventListener('mousedown', () => dibujando = true);
+    canvas.addEventListener('mouseup', () => { dibujando = false; ctx.beginPath(); });
+    canvas.addEventListener('mousemove', dibujar);
 
-        if (!box) return;
+    canvas.addEventListener('touchstart', (e) => { dibujando = true; e.preventDefault(); });
+    canvas.addEventListener('touchend', () => { dibujando = false; ctx.beginPath(); });
+    canvas.addEventListener('touchmove', (e) => {
+        if (!dibujando) return;
+        let rect = canvas.getBoundingClientRect();
+        let touch = e.touches[0];
+        ctx.lineWidth = 2;
+        ctx.lineCap = 'round';
+        ctx.strokeStyle = '#000';
+        ctx.lineTo(touch.clientX - rect.left, touch.clientY - rect.top);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(touch.clientX - rect.left, touch.clientY - rect.top);
+        e.preventDefault();
+    });
 
-        const actual = parseInt(actualVal, 10);
-        const limite = parseInt(limiteVal, 10);
+    function dibujar(e) {
+        if (!dibujando) return;
+        let rect = canvas.getBoundingClientRect();
+        ctx.lineWidth = 2;
+        ctx.lineCap = 'round';
+        ctx.strokeStyle = '#000';
+        ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
+    }
 
-        if (isNaN(actual) || isNaN(limite) || actualVal.trim() === '' || limiteVal.trim() === '') {
-            box.style.background = "#0f172a";
-            box.style.color = "#94a3b8";
-            box.style.border = "1px solid #334155";
-            box.innerText = "Ingrese kilometraje actual y límite de mantención.";
+    function limpiarFirma() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
+    // Configuración dinámica por rodado
+    function actualizarConfiguracionCarro() {
+        const select = document.getElementById('unidad');
+        const option = select.options[select.selectedIndex];
+        const chasisInput = document.getElementById('chasis');
+        const contenedor = document.getElementById('contenedorNeumaticos');
+
+        if (!option.value) {
+            chasisInput.value = '';
+            contenedor.innerHTML = '<small style="color:#7f8c8d;">Seleccione una unidad para desplegar neumáticos.</small>';
             return;
         }
 
-        const restantes = limite - actual;
+        chasisInput.value = option.getAttribute('data-chasis') || '';
+        const numRodado = parseInt(option.getAttribute('data-rodado')) || 4;
 
-        if (restantes < 0) {
-            const exceso = Math.abs(restantes);
-            box.style.background = "#dc262620";
-            box.style.color = "#f87171";
-            box.style.border = "1px solid #dc2626";
-            box.innerText = `¡ALERTA CRÍTICA! Mantención Vencida. Excedido en ${exceso} km.`;
-        } else if (restantes <= 1000) {
-            box.style.background = "#eab30820";
-            box.style.color = "#facc15";
-            box.style.border = "1px solid #eab308";
-            box.innerText = `¡ADVERTENCIA! Mantención Próxima. Faltan ${restantes} km para la mantención.`;
-        } else {
-            box.style.background = "#16a34a20";
-            box.style.color = "#4ade80";
-            box.style.border = "1px solid #16a34a";
-            box.innerText = `Mantención al día. Faltan ${restantes} km para la próxima mantención.`;
-        }
-    }
+        let htmlNeu = '';
+        const posiciones = numRodado === 6 
+            ? ['Delantero Izq.', 'Delantero Der.', 'Traser. Ext. Izq.', 'Traser. Int. Izq.', 'Traser. Int. Der.', 'Traser. Ext. Der.']
+            : ['Delantero Izq.', 'Delantero Der.', 'Trasero Izq.', 'Trasero Der.'];
 
-    function toggleRodado(tipo) {
-        const c = document.getElementById('contenedor-neumaticos');
-        const lista = (tipo === 'doble') ? [
-            { id: 'di', label: '1. Delantero Izquierdo' },
-            { id: 'dd', label: '2. Delantero Derecho' },
-            { id: 'tie', label: '3. Trasero Izquierdo (Exterior)' },
-            { id: 'tii', label: '4. Trasero Izquierdo (Interior)' },
-            { id: 'tde', label: '5. Trasero Derecho (Exterior)' },
-            { id: 'tdi', label: '6. Trasero Derecho (Interior)' }
-        ] : [
-            { id: 'di', label: '1. Delantero Izquierdo' },
-            { id: 'dd', label: '2. Delantero Derecho' },
-            { id: 'ti', label: '3. Trasero Izquierdo' },
-            { id: 'td', label: '4. Trasero Derecho' }
-        ];
-
-        c.innerHTML = lista.map(item => `
-            <div class="tire-card">
-                <span class="sub-title">${item.label}</span>
-                <div class="grid">
-                    <div class="field"><label>Presión (PSI):</label><input type="number" id="psi_${item.id}" placeholder="110"></div>
-                    <div class="field"><label>Huella (mm):</label><input type="number" step="0.1" id="huella_${item.id}" placeholder="8.5"></div>
-                    <div class="field full"><label>Hallazgos / Estado:</label><input type="text" id="obs_${item.id}" placeholder="Sin novedades o describir problema..."></div>
-                    <div class="field full"><label>Foto Evidencia Rueda:</label><input type="file" id="foto_${item.id}" accept="image/*" capture="environment"></div>
-                </div>
-            </div>
-        `).join('');
-    }
-
-    function renderSeg(list, elementId) {
-        const el = document.getElementById(elementId);
-        el.innerHTML = list.map((item, idx) => `
-            <div class="check-item">
-                <div class="check-row">
-                    <span style="font-size:0.82rem;">${item}</span>
-                    <select style="width:75px;" onchange="toggleEvid('${elementId}-${idx}', this.value)">
+        posiciones.forEach((pos, idx) => {
+            htmlNeu += `
+                <div class="neumatico-item">
+                    <small><b>${pos}</b></small>
+                    <select class="neu-val" data-pos="${pos}">
                         <option value="OK">OK</option>
-                        <option value="NOK">NOK</option>
+                        <option value="BAJO">Presión Baja</option>
+                        <option value="DESGASTE">Desgastado</option>
                     </select>
                 </div>
-                <div id="evid-${elementId}-${idx}" class="evidence-box">
-                    <input type="text" id="obs-${elementId}-${idx}" placeholder="Detalle la falla o hallazgo observado..." style="margin-bottom:6px;">
-                    <input type="file" id="foto-${elementId}-${idx}" accept="image/*" capture="environment">
-                </div>
-            </div>
-        `).join('');
+            `;
+        });
+        contenedor.innerHTML = htmlNeu;
     }
 
-    function toggleEvid(id, val) {
-        document.getElementById(`evid-${id}`).style.display = (val === 'NOK') ? 'block' : 'none';
-    }
-
-    function cargarDatosUnidadManual(codigo) {
-        if (bdUnidades[codigo]) {
-            document.getElementById('unidad_chasis').value = bdUnidades[codigo].chasis;
-            document.getElementById('unidad_modelo').value = bdUnidades[codigo].modelo;
-            document.getElementById('config_rodado').value = bdUnidades[codigo].rodado;
-            toggleRodado(bdUnidades[codigo].rodado);
-        } else {
-            document.getElementById('unidad_chasis').value = '';
-            document.getElementById('unidad_modelo').value = '';
-        }
-    }
-
-    async function iniciarEscanerQR() {
-        if (typeof Html5Qrcode === "undefined") {
-            alert("No se cargó el escáner. Use selección manual.");
-            return;
-        }
-        const container = document.getElementById('qr-reader-container');
-        container.style.display = 'block';
-
-        try {
-            html5QrcodeScanner = new Html5Qrcode("qr-reader");
-            await html5QrcodeScanner.start(
-                { facingMode: "environment" },
-                { fps: 10, qrbox: { width: 200, height: 200 } },
-                (decodedText) => {
-                    if (bdUnidades[decodedText]) {
-                        document.getElementById('select_unidad').value = decodedText;
-                        cargarDatosUnidadManual(decodedText);
+    // Escáner QR
+    function iniciarEscanerQR() {
+        document.getElementById('qr-reader').style.display = 'block';
+        html5QrcodeScanner = new Html5Qrcode("qr-reader");
+        html5QrcodeScanner.start(
+            { facingMode: "environment" },
+            { fps: 10, qrbox: 250 },
+            (decodedText) => {
+                try {
+                    const data = JSON.parse(decodedText);
+                    if (data.unidad) {
+                        document.getElementById('unidad').value = data.unidad;
+                        actualizarConfiguracionCarro();
                     }
-                    detenerEscanerQR();
-                },
-                () => {}
-            );
-        } catch (err) {
-            alert("Cámara no disponible.");
-            container.style.display = 'none';
-        }
+                } catch(e) {
+                    console.log("QR no es JSON estructurado, asignando texto directo.");
+                }
+                detenerEscanerQR();
+            },
+            (error) => {}
+        );
     }
 
     function detenerEscanerQR() {
         if (html5QrcodeScanner) {
             html5QrcodeScanner.stop().then(() => {
-                document.getElementById('qr-reader-container').style.display = 'none';
-                html5QrcodeScanner = null;
-            }).catch(() => {
-                document.getElementById('qr-reader-container').style.display = 'none';
-                html5QrcodeScanner = null;
+                document.getElementById('qr-reader').style.display = 'none';
             });
         }
     }
 
-    /* CANVAS FIRMA DIGITAL */
-    let canvas, ctx, dibujando = false;
-    function initCanvas() {
-        canvas = document.getElementById('canvas-firma');
-        ctx = canvas.getContext('2d');
-        canvas.width = canvas.offsetWidth;
-        canvas.height = canvas.offsetHeight;
-        ctx.strokeStyle = "#000000"; 
-        ctx.lineWidth = 2;
+    // Proceso de Envío e Sincronización Integrado
+    document.getElementById('formChecklist').addEventListener('submit', async function(e) {
+        e.preventDefault();
 
-        const getPos = (e) => {
-            const r = canvas.getBoundingClientRect();
-            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-            return { x: clientX - r.left, y: clientY - r.top };
+        // Conversión foto a Base64
+        const fotoInput = document.getElementById('foto_hallazgo');
+        let fotoBase64 = "";
+        if (fotoInput.files && fotoInput.files[0]) {
+            fotoBase64 = await convertirBase64(fotoInput.files[0]);
+        }
+
+        // Checklist estructurado
+        let itemsChecklist = [];
+        document.querySelectorAll('.chk-item').forEach(el => {
+            itemsChecklist.push({
+                seccion: el.getAttribute('data-seccion'),
+                item: el.getAttribute('data-nombre'),
+                estado: el.value
+            });
+        });
+
+        // Neumáticos estructurados
+        let itemsNeumaticos = [];
+        document.querySelectorAll('.neu-val').forEach(el => {
+            itemsNeumaticos.push({
+                posicion: el.getAttribute('data-pos'),
+                estado: el.value
+            });
+        });
+
+        const firmaData = canvas.toDataURL();
+        const timestamp = new Date().toISOString();
+
+        // Payload local preliminar
+        let payload = {
+            unidad: document.getElementById('unidad').value,
+            chasis: document.getElementById('chasis').value,
+            maquinista: document.getElementById('maquinista').value,
+            estado_operativo: document.getElementById('estado_operativo').value,
+            hallazgos: document.getElementById('hallazgos').value || "Sin novedades",
+            checklist: itemsChecklist,
+            neumaticos: itemsNeumaticos,
+            foto: fotoBase64,
+            firma: firmaData,
+            fecha: timestamp
         };
 
-        const start = (e) => { dibujando = true; const p = getPos(e); ctx.beginPath(); ctx.moveTo(p.x, p.y); };
-        const move = (e) => { if (!dibujando) return; const p = getPos(e); ctx.lineTo(p.x, p.y); ctx.stroke(); e.preventDefault(); };
-        const stop = () => dibujando = false;
+        // Generar Hash SHA-256 local para validación origen
+        payload.hash = await calcularSHA256(JSON.stringify({
+            unidad: payload.unidad,
+            maquinista: payload.maquinista,
+            fecha: payload.fecha,
+            hallazgos: payload.hallazgos
+        }));
 
-        canvas.addEventListener('mousedown', start); canvas.addEventListener('mousemove', move); window.addEventListener('mouseup', stop);
-        canvas.addEventListener('touchstart', start); canvas.addEventListener('touchmove', move); window.addEventListener('touchend', stop);
-    }
+        await enviarAComandancia(payload);
+    });
 
-    function limpiarFirma() { 
-        if (canvas && ctx) {
-            ctx.clearRect(0, 0, canvas.width, canvas.height); 
+    async function enviarAComandancia(datos) {
+        if (!navigator.onLine) {
+            guardarEnMemoriaLocal(datos);
+            return;
+        }
+
+        try {
+            const respuesta = await fetch(URL_API_CUARTEL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(datos)
+            });
+
+            if (respuesta.ok) {
+                const resData = await respuesta.json();
+                const selloFinal = resData.sello_sha256 || datos.hash;
+                
+                mostrarMensaje(`✅ Inspección Registrada. Sello SHA-256: ${selloFinal}`, "#d4edda", "#155724");
+                generarQRGrafico(selloFinal);
+                resetearFormulario();
+                sincronizarPendientes();
+            } else {
+                guardarEnMemoriaLocal(datos);
+            }
+        } catch (error) {
+            console.warn("Conexión con Servidor del Cuartel fallida. Guardando offline...", error);
+            guardarEnMemoriaLocal(datos);
         }
     }
 
-    /* FUNCIÓN CÁLCULO HASH SHA-256 (WEB CRYPTO API) */
-    async function generarSHA256(cadena) {
-        const encoder = new TextEncoder();
-        const data = encoder.encode(cadena);
-        const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    function guardarEnMemoriaLocal(datos) {
+        let cola = JSON.parse(localStorage.getItem("checklist_pendientes") || "[]");
+        cola.push(datos);
+        localStorage.setItem("checklist_pendientes", JSON.stringify(cola));
+        
+        mostrarMensaje("📲 Guardado en memoria local del teléfono. Se transmitirá al reconectar con la red del Cuartel.", "#fff3cd", "#856404");
+        generarQRGrafico(datos.hash);
+        resetearFormulario();
+    }
+
+    async function sincronizarPendientes() {
+        let cola = JSON.parse(localStorage.getItem("checklist_pendientes") || "[]");
+        if (cola.length === 0) return;
+
+        let pendientesRestantes = [];
+        for (let datos of cola) {
+            try {
+                let res = await fetch(URL_API_CUARTEL, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(datos)
+                });
+                if (!res.ok) pendientesRestantes.push(datos);
+            } catch (e) {
+                pendientesRestantes.push(datos);
+            }
+        }
+        localStorage.setItem("checklist_pendientes", JSON.stringify(pendientesRestantes));
+    }
+
+    // Funciones Auxiliares Criptografía y QR
+    async function calcularSHA256(texto) {
+        const msgUint8 = new TextEncoder().encode(texto);
+        const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
         const hashArray = Array.from(new Uint8Array(hashBuffer));
         return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
     }
 
-    /* GENERACIÓN DE FOLIO, CERTIFICACIÓN Y TRANSMISIÓN AL DASHBOARD */
-    async function procesarInspeccionSHA256() {
-        const unidad = document.getElementById('select_unidad').value;
-        const inspector = document.getElementById('inspector').value;
-        const rut = document.getElementById('rut').value;
+    function generarQRGrafico(texto) {
+        const contenedor = document.getElementById("qrcode-cert");
+        contenedor.innerHTML = "";
+        new QRCode(contenedor, {
+            text: texto,
+            width: 128,
+            height: 128
+        });
+    }
 
-        if (!unidad || !inspector) {
-            alert("Seleccione una Unidad e ingrese el Nombre del Inspector.");
-            return;
-        }
+    function convertirBase64(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = error => reject(error);
+        });
+    }
 
-        // 1. Generar Folio Único Correlativo
-        const fecha = new Date();
-        const fechaStr = fecha.toISOString().split('T')[0].replace(/-/g, '');
-        const aleatorio = Math.floor(1000 + Math.random() * 9000);
-        const folio = `5TA-${unidad.replace('-','')}-${fechaStr}-${aleatorio}`;
+    function mostrarMensaje(texto, bgColor, textColor) {
+        const msgBox = document.getElementById('mensajeEstado');
+        msgBox.innerText = texto;
+        msgBox.style.backgroundColor = bgColor;
+        msgBox.style.color = textColor;
+        msgBox.style.display = "block";
+    }
 
-        // 2. Extraer Firma Base64 de Canvas
-        const firmaBase64 = canvas.toDataURL();
+    function resetearFormulario() {
+        document.getElementById('formChecklist').reset();
+        limpiarFirma();
+        actualizarConfiguracionCarro();
+    }
 
-        // 3. Empaquetado Estructurado de Datos (JSON)
-        const payloadObj = {
-            folio: folio,
-            unidad: unidad,
-            chasis: document.getElementById('unidad_chasis').value,
-            modelo: document.getElementById('unidad_modelo').value,
-            inspector: inspector,
-            rut: rut,
-            km_actual: document.getElementById('km_actual').value,
-            km_limite: document.getElementById('km_mantencion').value,
-            horometro: document.getElementById('horometro').value,
-            fecha_iso: fecha.toISOString(),
-            firma: firmaBase64
-        };
-
-        // 4. Calcular Hash SHA-256
-        const hashSHA = await generarSHA256(JSON.stringify(payloadObj));
-        payloadObj.checksum_sha256 = hashSHA;
-
-        // 5. Renderizar Certificado en Pantalla Terreno
-        document.getElementById('cert-container').style.display = 'block';
-        document.getElementById('cert-folio').innerText = `FOLIO: ${folio}`;
-        document.getElementById('cert-sha').innerText = `SHA-256: ${hashSHA}`;
-
-        // 6. Generar QR Criptográfico
-        const qrPayload = `FOLIO:${folio}|SHA256:${hashSHA}`;
-        document.getElementById('qrcode').innerHTML = '';
-        new QRCode(document.getElementById("qrcode"), { text: qrPayload, width: 140, height: 140 });
-
-        // 7. ENVÍO AUTOMÁTICO AL SERVIDOR / DASHBOARD
-        if (navigator.onLine) {
-            try {
-                console.log("Datos listos para sincronización con Dashboard:", payloadObj);
-                alert(`Inspección Certificada y Enviada al Dashboard.\nFolio: ${folio}`);
-            } catch (e) {
-                localStorage.setItem(`pwa_offline_${folio}`, JSON.stringify(payloadObj));
-                alert(`Guardado localmente (Offline). Se enviará al reconectar.\nFolio: ${folio}`);
-            }
-        } else {
-            localStorage.setItem(`pwa_offline_${folio}`, JSON.stringify(payloadObj));
-            alert(`Registro guardado en memoria móvil (Sin conexión).\nFolio: ${folio}`);
+    function salirAplicacion() {
+        if (confirm("¿Desea cerrar la sesión de inspección en terreno?")) {
+            detenerEscanerQR();
+            resetearFormulario();
+            document.getElementById('mensajeEstado').style.display = 'none';
+            document.getElementById('qrcode-cert').innerHTML = '';
+            window.location.href = "about:blank";
         }
     }
 </script>
+
 </body>
 </html>
