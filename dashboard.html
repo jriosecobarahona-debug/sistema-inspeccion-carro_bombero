@@ -84,42 +84,62 @@
                         </tr>
                     </thead>
                     <tbody id="tabla-unidades" class="divide-y divide-slate-100">
-                        <!-- Carga dinámica -->
+                        <!-- Carga dinámica mediante JS -->
                     </tbody>
                 </table>
             </div>
         </section>
 
-        <!-- PUNTO 4: MÓDULO DE CIERRE DE ORDEN DE TRABAJO (OT) Y CERTIFICACIÓN -->
+        <!-- PUNTO 4: MÓDULO DE CIERRE DE OT (TALLERES EXTERNOS) -->
         <section id="modulo-ot" class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 space-y-4">
             <div class="border-b border-slate-100 pb-3 flex justify-between items-center">
                 <div>
-                    <h3 class="text-lg font-bold text-slate-800">Cierre de Orden de Trabajo (OT) y Certificación de Rehabilitación</h3>
-                    <p class="text-xs text-slate-500">Requisito obligatorio para devolver la unidad al estado Verde (Operativo)</p>
+                    <h3 class="text-lg font-bold text-slate-800">Cierre de Orden de Trabajo (OT) - Servicios Externos</h3>
+                    <p class="text-xs text-slate-500">Recepción de trabajos en taller y habilitación de unidad</p>
                 </div>
                 <span class="bg-amber-100 text-amber-800 text-xs font-semibold px-2.5 py-0.5 rounded">OT Pendiente: #OT-B1-2026-09</span>
             </div>
 
             <form id="form-certificacion" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="space-y-3">
-                    <label class="block text-xs font-bold text-slate-700 uppercase">1. Evidencia Fotográfica de Solución</label>
-                    <input type="file" id="foto-solucion" accept="image/*" class="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-slate-800 file:text-white hover:file:bg-slate-700 cursor-pointer" required>
-                    <p class="text-xs text-slate-400">Adjunte foto del componente o reparación efectuada.</p>
+                
+                <!-- 1. Carga de Archivos Externos -->
+                <div class="space-y-2 md:col-span-2 bg-slate-50 p-4 rounded-lg border border-slate-200">
+                    <label class="block text-xs font-bold text-slate-700 uppercase">1. Documentación Externa (Facturas, Informes Técnicos y Fotos)</label>
+                    <input type="file" id="archivos-externos" accept="image/*,.pdf" multiple class="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-slate-800 file:text-white hover:file:bg-slate-700 cursor-pointer" required>
+                    <p class="text-xs text-slate-400">Puedes seleccionar múltiples archivos a la vez (PDF de facturas, informes del taller o imágenes de la reparación).</p>
                 </div>
 
-                <div class="space-y-3">
-                    <label class="block text-xs font-bold text-slate-700 uppercase">2. Certificador / Responsable Técnico</label>
-                    <input type="text" id="responsable-certificacion" placeholder="Ej. Inspector / Comandante de Material Mayor" class="w-full border border-slate-300 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-800" required>
+                <!-- 2. Certificador / Inspector Interno -->
+                <div class="space-y-2">
+                    <label class="block text-xs font-bold text-slate-700 uppercase">2. Inspector / Recepcionista Institucional</label>
+                    <input type="text" id="responsable-certificacion" placeholder="Ej. Inspector de Material Mayor" class="w-full border border-slate-300 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-800" required>
                 </div>
 
-                <div class="md:col-span-2 space-y-3">
-                    <label class="block text-xs font-bold text-slate-700 uppercase">3. Informe Técnico de Solución</label>
-                    <textarea id="informe-tecnico" rows="3" placeholder="Detalle los trabajos realizados, repuestos cambiados y pruebas de presión/estanqueidad aprobadas..." class="w-full border border-slate-300 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-800" required></textarea>
+                <!-- 3. Identificación del Taller Externo y Fechas -->
+                <div class="space-y-2 md:col-span-1 bg-slate-50 p-3 rounded-lg border border-slate-200 grid grid-cols-1 sm:grid-cols-3 gap-2">
+                    <div class="sm:col-span-3">
+                        <label class="block text-xs font-bold text-slate-700 uppercase">3. Nombre del Taller / Proveedor Externo</label>
+                        <input type="text" id="taller-nombre" placeholder="Ej. Maestranza / Taller Mecánico Valparaíso" class="w-full border border-slate-300 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-800" required>
+                    </div>
+                    <div class="sm:col-span-1">
+                        <label class="block text-xs font-semibold text-slate-600">Fecha Ingreso</label>
+                        <input type="date" id="taller-fecha-ingreso" class="w-full border border-slate-300 rounded-lg p-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-slate-800" required>
+                    </div>
+                    <div class="sm:col-span-2">
+                        <label class="block text-xs font-semibold text-slate-600">Fecha Salida / Recepción</label>
+                        <input type="date" id="taller-fecha-salida" class="w-full border border-slate-300 rounded-lg p-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-slate-800" required>
+                    </div>
+                </div>
+
+                <!-- 4. Detalle de Trabajos Realizados -->
+                <div class="md:col-span-2 space-y-2">
+                    <label class="block text-xs font-bold text-slate-700 uppercase">4. Resumen de Trabajos / Repuestos según Factura e Informe</label>
+                    <textarea id="informe-tecnico" rows="3" placeholder="Detalle la reparación ejecutada por el taller, repuestos sustituidos y número de factura asociada..." class="w-full border border-slate-300 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-800" required></textarea>
                 </div>
 
                 <div class="md:col-span-2 flex justify-end space-x-3 pt-2">
                     <button type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm px-5 py-2.5 rounded-lg shadow transition">
-                        Certificar, Cerrar OT y Rehabilitar Unidad
+                        Certificar Recepción de Taller, Cerrar OT y Rehabilitar
                     </button>
                 </div>
             </form>
@@ -129,7 +149,7 @@
 
     <!-- SCRIPT DE CONTROL Y GENERACIÓN DE PDF CERTIFICADO -->
     <script>
-        // Datos inmutables recibidos desde la App Móvil (Simulación)
+        // Base de datos local simulada (Sincronizada con los envíos de la App Móvil)
         let unidades = [
             {
                 id: "B-1",
@@ -171,7 +191,7 @@
 
         document.getElementById('current-time').innerText = new Date().toLocaleString('es-CL');
 
-        // Renderizar tabla central
+        // Renderizar tabla central de unidades
         function renderTabla() {
             const tbody = document.getElementById('tabla-unidades');
             tbody.innerHTML = '';
@@ -206,13 +226,13 @@
             });
         }
 
-        // Generar PDF Certificado (Punto 5)
+        // Generar PDF Certificado Inmutable (Punto 5)
         function descargarPDF(id) {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
             const u = unidades.find(item => item.id === id);
 
-            // Membrete
+            // Membrete Superior
             doc.setFillColor(15, 23, 42);
             doc.rect(0, 0, 210, 28, 'F');
             doc.setTextColor(255, 255, 255);
@@ -223,7 +243,7 @@
             doc.setFont("helvetica", "normal");
             doc.text(`Cuerpo de Bomberos - Documento Inmutable | Hash Sello: ${u.hash}`, 14, 23);
 
-            // Datos de Unidad
+            // Seccion Datos de Unidad
             doc.setTextColor(30, 41, 59);
             doc.setFontSize(11);
             doc.setFont("helvetica", "bold");
@@ -246,7 +266,7 @@
                 headStyles: { fillStyle: [30, 41, 59] }
             });
 
-            // Sello
+            // Sello Legal e Inmutabilidad
             const finalY = doc.lastAutoTable.finalY + 12;
             doc.setFont("helvetica", "bold");
             doc.text("2. Trazabilidad y Sello Inmutable", 14, finalY);
@@ -258,31 +278,36 @@
             doc.save(`Reporte_Certificado_${u.id}.pdf`);
         }
 
-        // Cierre de OT y rehabilitación (Punto 4)
+        // Manejo del Cierre de OT para Proveedores Externos (Punto 4)
         document.getElementById('form-certificacion').addEventListener('submit', function(e) {
             e.preventDefault();
+            
             const responsable = document.getElementById('responsable-certificacion').value;
+            const taller = document.getElementById('taller-nombre').value;
+            const fIngreso = document.getElementById('taller-fecha-ingreso').value;
+            const fSalida = document.getElementById('taller-fecha-salida').value;
+            const archivos = document.getElementById('archivos-externos').files;
 
-            // Actualizar unidad B-1 a Verde (Operativo)
+            // Actualizar datos de la unidad B-1 en la lista local
             const b1 = unidades.find(u => u.id === 'B-1');
             b1.estado = "Operativo";
             b1.rt = "Al Día";
             b1.mantencion = "En Regla";
-            b1.hallazgos = `Reparación certificada por ${responsable}. Fuga reparada y RT renovada.`;
+            b1.hallazgos = `Reparación ejecutada en taller '${taller}' (${fIngreso} a ${fSalida}). Adjuntos: ${archivos.length} archivo(s) (Factura/Informe). Recepcionado por ${responsable}.`;
 
-            // Actualizar Tarjeta 1 a Operativo
+            // Actualizar Tarjeta 1 del Semáforo General a Verde
             document.getElementById('card-estado-texto').className = "text-2xl font-black text-emerald-600 mt-1";
             document.getElementById('card-estado-texto').innerText = "100% OPERATIVO";
-            document.getElementById('card-estado-sub').innerText = "Todas las unidades disponibles";
+            document.getElementById('card-estado-sub').innerText = "Unidad B-1 recepcionada de taller";
             document.getElementById('card-estado-icon').className = "w-12 h-12 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 font-bold text-2xl";
             document.getElementById('card-estado-icon').innerText = "✅";
 
-            alert(`✅ OT Cerrada exitosamente. La Unidad B-1 ha sido rehabilitada a estado OPERATIVO por ${responsable}.`);
+            alert(`✅ Recepción de Taller Certificada.\n\nUnidad B-1 rehabilitada exitosamente.\nTaller: ${taller}\nArchivos adjuntados: ${archivos.length}`);
             renderTabla();
             this.reset();
         });
 
-        // Inicializar
+        // Carga inicial de datos al abrir el archivo
         renderTabla();
     </script>
 </body>
