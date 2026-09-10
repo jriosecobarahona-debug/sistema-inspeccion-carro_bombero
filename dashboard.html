@@ -3,46 +3,55 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Control de Material Mayor - Carro Bomba</title>
+    <title>Dashboard Control de Material Mayor - Cuerpo de Bomberos</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- jsPDF para Generación de PDF Certificado -->
+    <!-- jsPDF para Generación de PDF Certificado e Informe App -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
 </head>
 <body class="bg-slate-100 font-sans text-slate-800">
 
-    <!-- CABECERA PRINCIPAL -->
+    <!-- CABECERA PRINCIPAL CON LOGO OFICIAL INSTITUCIONAL -->
     <header class="bg-slate-900 text-white shadow-lg sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
             <div class="flex items-center space-x-3">
-                <div class="w-10 h-10 bg-red-600 rounded-lg flex items-center justify-center font-bold text-xl shadow">🚒</div>
+                <!-- Escudo Oficial Cuerpo de Bomberos (SVG Vectorial) -->
+                <div class="w-12 h-12 bg-red-700 rounded-xl p-2 flex items-center justify-center shadow-md border border-red-500">
+                    <svg viewBox="0 0 100 100" class="w-full h-full fill-white">
+                        <path d="M50 5 L85 20 V50 C85 70 50 95 50 95 C50 95 15 70 15 50 V20 Z" fill="#990000" stroke="#FFFFFF" stroke-width="3"/>
+                        <path d="M30 30 L70 70 M70 30 L30 70" stroke="#FFD700" stroke-width="4" stroke-linecap="round"/>
+                        <rect x="42" y="35" width="16" height="30" fill="#FFFFFF" rx="2"/>
+                        <line x1="42" y1="42" x2="58" y2="42" stroke="#990000" stroke-width="2"/>
+                        <line x1="42" y1="50" x2="58" y2="50" stroke="#990000" stroke-width="2"/>
+                        <line x1="42" y1="58" x2="58" y2="58" stroke="#990000" stroke-width="2"/>
+                        <path d="M35 32 C35 22 65 22 65 32 L70 35 H30 Z" fill="#FFD700"/>
+                    </svg>
+                </div>
                 <div>
-                    <h1 class="text-xl font-bold leading-tight">Control de Material Mayor</h1>
-                    <p class="text-xs text-slate-400">Dashboard de Recepción & Certificación de Unidades</p>
+                    <h1 class="text-xl font-bold leading-tight tracking-wide uppercase">Cuerpo de Bomberos</h1>
+                    <p class="text-xs text-slate-400 font-medium">Control de Material Mayor & Comandancia</p>
                 </div>
             </div>
             <div class="flex items-center space-x-4">
-                <span id="current-time" class="text-xs font-mono text-slate-400"></span>
+                <span id="current-time" class="text-xs font-mono bg-slate-800 text-slate-300 px-3 py-1.5 rounded-lg border border-slate-700"></span>
             </div>
         </div>
     </header>
 
     <main class="max-w-7xl mx-auto px-4 py-6 space-y-6">
 
-        <!-- PUNTO 2: LECTURA RÁPIDA "DE UN VISTAZO" (3 TARJETAS) -->
+        <!-- LECTURA RÁPIDA "DE UN VISTAZO" (3 TARJETAS SEMÁFORO) -->
         <section class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <!-- Tarjeta 1: Estado Operativo General -->
             <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
                 <div>
                     <p class="text-xs text-slate-500 uppercase font-semibold">Estado Operativo General</p>
                     <p id="card-estado-texto" class="text-2xl font-black text-red-600 mt-1">FUERA DE SERVICIO</p>
-                    <p id="card-estado-sub" class="text-xs text-slate-400">Unidad B-1 con Falla Crítica</p>
+                    <p id="card-estado-sub" class="text-xs text-slate-400">Unidad B-1 en Taller Externo</p>
                 </div>
                 <div id="card-estado-icon" class="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center text-red-600 font-bold text-2xl">🚨</div>
             </div>
 
-            <!-- Tarjeta 2: Documentación Crítica -->
             <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
                 <div>
                     <p class="text-xs text-slate-500 uppercase font-semibold">Documentación Crítica</p>
@@ -52,7 +61,6 @@
                 <div class="w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center text-amber-600 font-bold text-2xl">⚠️</div>
             </div>
 
-            <!-- Tarjeta 3: Pauta de Mantención -->
             <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
                 <div>
                     <p class="text-xs text-slate-500 uppercase font-semibold">Pauta de Mantención</p>
@@ -63,11 +71,14 @@
             </div>
         </section>
 
-        <!-- PUNTO 3: TABLA CENTRAL DE UNIDADES (SINCRONIZADA CON LA APP) -->
+        <!-- TABLA CENTRAL DE UNIDADES E INSPECCIONES APP -->
         <section class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
             <div class="p-5 border-b border-slate-100 flex justify-between items-center">
-                <h2 class="text-lg font-bold text-slate-800">Estado de Unidades (Sincronizado con App Móvil)</h2>
-                <span class="text-xs text-slate-400">Registros inmutables con sello digital</span>
+                <div>
+                    <h2 class="text-lg font-bold text-slate-800">Estado de Unidades & Reportes de Inspección App</h2>
+                    <p class="text-xs text-slate-400">Sincronizado en tiempo real con checklist de maquinistas en terreno</p>
+                </div>
+                <span class="text-xs bg-slate-100 text-slate-600 font-mono px-2.5 py-1 rounded-md border border-slate-200">Sello SHA-256 Activo</span>
             </div>
 
             <div class="overflow-x-auto">
@@ -80,42 +91,44 @@
                             <th class="p-4">Revisión Técnica</th>
                             <th class="p-4">Próx. Mantención</th>
                             <th class="p-4">Estado Operativo</th>
-                            <th class="p-4 text-center">Acción</th>
+                            <th class="p-4 text-center">Acciones</th>
                         </tr>
                     </thead>
                     <tbody id="tabla-unidades" class="divide-y divide-slate-100">
-                        <!-- Carga dinámica mediante JS -->
+                        <!-- Carga dinámica JS -->
                     </tbody>
                 </table>
             </div>
         </section>
 
-        <!-- PUNTO 4: MÓDULO DE CIERRE DE OT (TALLERES EXTERNOS) -->
+        <!-- MÓDULO DE CIERRE DE OT CON SELECTOR DE OT PENDIENTE -->
         <section id="modulo-ot" class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 space-y-4">
-            <div class="border-b border-slate-100 pb-3 flex justify-between items-center">
+            <div class="border-b border-slate-100 pb-3 flex flex-col md:flex-row md:justify-between md:items-center gap-2">
                 <div>
                     <h3 class="text-lg font-bold text-slate-800">Cierre de Orden de Trabajo (OT) - Servicios Externos</h3>
-                    <p class="text-xs text-slate-500">Recepción de trabajos en taller y habilitación de unidad</p>
+                    <p class="text-xs text-slate-500">Recepción de trabajos en taller externo y habilitación de la unidad</p>
                 </div>
-                <span class="bg-amber-100 text-amber-800 text-xs font-semibold px-2.5 py-0.5 rounded">OT Pendiente: #OT-B1-2026-09</span>
+                <div class="flex items-center space-x-2 bg-amber-50 p-2 rounded-lg border border-amber-200">
+                    <label for="ot-selector" class="text-xs font-bold text-amber-900 whitespace-nowrap">Seleccionar OT Pendiente:</label>
+                    <select id="ot-selector" class="bg-white border border-amber-300 text-amber-900 text-xs font-mono font-bold rounded-md p-1.5 focus:outline-none focus:ring-2 focus:ring-amber-500 cursor-pointer" onchange="seleccionarOT()">
+                        <!-- Carga dinámica OTs -->
+                    </select>
+                </div>
             </div>
 
             <form id="form-certificacion" class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 
-                <!-- 1. Carga de Archivos Externos -->
                 <div class="space-y-2 md:col-span-2 bg-slate-50 p-4 rounded-lg border border-slate-200">
                     <label class="block text-xs font-bold text-slate-700 uppercase">1. Documentación Externa (Facturas, Informes Técnicos y Fotos)</label>
                     <input type="file" id="archivos-externos" accept="image/*,.pdf" multiple class="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-slate-800 file:text-white hover:file:bg-slate-700 cursor-pointer" required>
-                    <p class="text-xs text-slate-400">Puedes seleccionar múltiples archivos a la vez (PDF de facturas, informes del taller o imágenes de la reparación).</p>
+                    <p class="text-xs text-slate-400">Seleccione la factura del taller proveedor, informe de trabajos y fotografías de la reparación.</p>
                 </div>
 
-                <!-- 2. Certificador / Inspector Interno -->
                 <div class="space-y-2">
                     <label class="block text-xs font-bold text-slate-700 uppercase">2. Inspector / Recepcionista Institucional</label>
                     <input type="text" id="responsable-certificacion" placeholder="Ej. Inspector de Material Mayor" class="w-full border border-slate-300 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-800" required>
                 </div>
 
-                <!-- 3. Identificación del Taller Externo y Fechas -->
                 <div class="space-y-2 md:col-span-1 bg-slate-50 p-3 rounded-lg border border-slate-200 grid grid-cols-1 sm:grid-cols-3 gap-2">
                     <div class="sm:col-span-3">
                         <label class="block text-xs font-bold text-slate-700 uppercase">3. Nombre del Taller / Proveedor Externo</label>
@@ -131,7 +144,6 @@
                     </div>
                 </div>
 
-                <!-- 4. Detalle de Trabajos Realizados -->
                 <div class="md:col-span-2 space-y-2">
                     <label class="block text-xs font-bold text-slate-700 uppercase">4. Resumen de Trabajos / Repuestos según Factura e Informe</label>
                     <textarea id="informe-tecnico" rows="3" placeholder="Detalle la reparación ejecutada por el taller, repuestos sustituidos y número de factura asociada..." class="w-full border border-slate-300 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-800" required></textarea>
@@ -147,13 +159,37 @@
 
     </main>
 
-    <!-- SCRIPT DE CONTROL Y GENERACIÓN DE PDF CERTIFICADO -->
+    <!-- MODAL PARA VER E IMPRIMIR INFORME DE INSPECCIÓN DE LA APP -->
+    <div id="modal-inspeccion" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-xl max-w-2xl w-full shadow-2xl border border-slate-200 overflow-hidden">
+            <div class="bg-slate-900 text-white px-6 py-4 flex justify-between items-center">
+                <div>
+                    <h3 id="modal-titulo" class="font-bold text-base">Reporte de Inspección App</h3>
+                    <p id="modal-sub" class="text-xs text-slate-400 font-mono"></p>
+                </div>
+                <button onclick="cerrarModal()" class="text-slate-400 hover:text-white text-xl font-bold">&times;</button>
+            </div>
+            <div id="modal-contenido" class="p-6 space-y-4 text-sm max-h-[70vh] overflow-y-auto">
+                <!-- Carga dinámica del detalle de la inspección -->
+            </div>
+            <div class="bg-slate-50 px-6 py-3 flex justify-between items-center border-t border-slate-100">
+                <button id="btn-imprimir-informe" onclick="" class="bg-red-700 hover:bg-red-800 text-white text-xs font-bold px-4 py-2 rounded-lg flex items-center space-x-2 shadow transition">
+                    <span>🖨️ Imprimir Informe Inspección (PDF)</span>
+                </button>
+                <button onclick="cerrarModal()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-bold px-4 py-2 rounded-lg transition">
+                    Cerrar Detalle
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPT DE CONTROL, INSPECCIONES, OT Y GENERACIÓN DE INFORMES -->
     <script>
-        // Base de datos local simulada (Sincronizada con los envíos de la App Móvil)
         let unidades = [
             {
                 id: "B-1",
                 nombre: "Carro Bomba Urbano B-1",
+                folioOT: "OT-B1-2026-09",
                 circulacion: "Al Día",
                 soap: "Al Día",
                 rt: "Vencida",
@@ -161,11 +197,20 @@
                 estado: "Fuera de Servicio",
                 hash: "a8f9c210b4e571c3",
                 fechaChecklist: "2026-09-09 08:30",
-                hallazgos: "Fuga en válvula de descarga N°2 del cuerpo de bomba y revisión técnica vencida."
+                maquinista: "Maquinista Donoso (1ª Cía)",
+                hallazgos: "Fuga severa en válvula de descarga N°2 del cuerpo de bomba y revisión técnica vencida.",
+                checklistDetalle: [
+                    { item: "Nivel de Aceite Motor", estado: "OK" },
+                    { item: "Presión de Aire Frenos", estado: "OK" },
+                    { item: "Cuerpo de Bomba / Válvulas", estado: "FALLA CRÍTICA - Fuga" },
+                    { item: "Luces de Emergencia / Sirena", estado: "OK" },
+                    { item: "Nivel de Agua Estanque", estado: "100% Lleno" }
+                ]
             },
             {
                 id: "R-1",
                 nombre: "Unidad de Rescate R-1",
+                folioOT: "OT-R1-2026-02",
                 circulacion: "Al Día",
                 soap: "Al Día",
                 rt: "Al Día",
@@ -173,11 +218,18 @@
                 estado: "Operativo",
                 hash: "f47b1902c38e91d2",
                 fechaChecklist: "2026-09-09 07:45",
-                hallazgos: "Sin hallazgos. Equipo 100% disponible."
+                maquinista: "Vol. Silva (2ª Cía)",
+                hallazgos: "Sin hallazgos. Equipo hidráulico de rescate probado y 100% disponible.",
+                checklistDetalle: [
+                    { item: "Nivel de Aceite Motor", estado: "OK" },
+                    { item: "Cojines de Levantamiento", estado: "OK" },
+                    { item: "Herramienta Hidráulica Combimedi", estado: "OK" }
+                ]
             },
             {
                 id: "Z-1",
                 nombre: "Carro Cisterna Z-1",
+                folioOT: "OT-Z1-2026-05",
                 circulacion: "Al Día",
                 soap: "Al Día",
                 rt: "Por Vencer (10 días)",
@@ -185,13 +237,18 @@
                 estado: "Operativo",
                 hash: "e10293847586a9b0",
                 fechaChecklist: "2026-09-08 19:10",
-                hallazgos: "Nivel de refrigerante en límite medio. Rellenado en pauta diaria."
+                maquinista: "Maquinista Pérez (3ª Cía)",
+                hallazgos: "Nivel de refrigerante en límite medio. Rellenado en pauta diaria.",
+                checklistDetalle: [
+                    { item: "Nivel de Refrigerante", estado: "Rellenado" },
+                    { item: "Válvula de Descarga Rápida 10\"", estado: "OK" }
+                ]
             }
         ];
 
         document.getElementById('current-time').innerText = new Date().toLocaleString('es-CL');
 
-        // Renderizar tabla central de unidades
+        // Renderizar Tabla
         function renderTabla() {
             const tbody = document.getElementById('tabla-unidades');
             tbody.innerHTML = '';
@@ -210,55 +267,212 @@
                     : `<span class="px-2.5 py-1 rounded-lg text-xs font-bold bg-red-600 text-white">FUERA DE SERVICIO</span>`;
 
                 tr.innerHTML = `
-                    <td class="p-4 font-bold text-slate-800">${u.nombre}<br><span class="text-xs font-mono font-normal text-slate-400">ID Sello: ${u.hash}</span></td>
+                    <td class="p-4 font-bold text-slate-800">
+                        ${u.nombre}<br>
+                        <span class="text-xs font-mono font-normal text-slate-400">Folio: ${u.folioOT} | SHA: ${u.hash.substring(0, 8)}...</span>
+                    </td>
                     <td class="p-4">${badge(u.circulacion, "Al Día")}</td>
                     <td class="p-4">${badge(u.soap, "Al Día")}</td>
                     <td class="p-4">${badge(u.rt, "Al Día", true)}</td>
                     <td class="p-4">${badge(u.mantencion, "En Regla (3.500 km)", true)}</td>
                     <td class="p-4">${estadoBadge}</td>
-                    <td class="p-4 text-center">
-                        <button onclick="descargarPDF('${u.id}')" class="bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold px-3 py-1.5 rounded transition">
-                            Descargar PDF Certificado
+                    <td class="p-4 text-center space-x-1">
+                        <button onclick="verInspeccionApp('${u.id}')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold px-2.5 py-1.5 rounded transition border border-slate-300">
+                            🔍 Inspección App
+                        </button>
+                        <button onclick="descargarPDF('${u.id}')" class="bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold px-2.5 py-1.5 rounded transition">
+                            📄 PDF
                         </button>
                     </td>
                 `;
                 tbody.appendChild(tr);
             });
+
+            actualizarSelectorOT();
         }
 
-        // Generar PDF Certificado Inmutable (Punto 5)
+        // Cargar Selector OT
+        function actualizarSelectorOT() {
+            const selector = document.getElementById('ot-selector');
+            selector.innerHTML = '';
+
+            const otsPendientes = unidades.filter(u => u.estado === "Fuera de Servicio" || u.rt === "Vencida");
+
+            if (otsPendientes.length === 0) {
+                selector.innerHTML = `<option value="">No hay OTs Pendientes</option>`;
+                return;
+            }
+
+            otsPendientes.forEach(u => {
+                const opt = document.createElement('option');
+                opt.value = u.id;
+                opt.innerText = `#${u.folioOT} (${u.id} - Hash: ${u.hash.substring(0,6)})`;
+                selector.appendChild(opt);
+            });
+
+            seleccionarOT();
+        }
+
+        function seleccionarOT() {
+            const id = document.getElementById('ot-selector').value;
+            if (!id) return;
+            const u = unidades.find(item => item.id === id);
+            if (u) {
+                document.getElementById('informe-tecnico').value = `[Atención OT ${u.folioOT} / Sello ${u.hash}]: Reparación de fallas reportadas el ${u.fechaChecklist}. Detalle: ${u.hallazgos}`;
+            }
+        }
+
+        // Ver e Imprimir Inspección App
+        function verInspeccionApp(id) {
+            const u = unidades.find(item => item.id === id);
+            document.getElementById('modal-titulo').innerText = `Informe Inspección App - ${u.nombre}`;
+            document.getElementById('modal-sub').innerText = `Folio OT: ${u.folioOT} | Sello Digital SHA-256: ${u.hash}`;
+
+            let itemsHTML = u.checklistDetalle.map(i => `
+                <div class="flex justify-between border-b border-slate-100 py-1.5">
+                    <span class="text-slate-600">${i.item}</span>
+                    <span class="font-bold ${i.estado.includes('FALLA') ? 'text-red-600' : 'text-emerald-600'}">${i.estado}</span>
+                </div>
+            `).join('');
+
+            document.getElementById('modal-contenido').innerHTML = `
+                <div class="bg-slate-50 p-3 rounded-lg border border-slate-200 text-xs space-y-1">
+                    <p><strong>Fecha/Hora Registro:</strong> ${u.fechaChecklist}</p>
+                    <p><strong>Maquinista a Cargo:</strong> ${u.maquinista}</p>
+                    <p><strong>Estado Reportado:</strong> <span class="font-bold ${u.estado === 'Operativo' ? 'text-emerald-600' : 'text-red-600'}">${u.estado}</span></p>
+                </div>
+                <div>
+                    <h4 class="font-bold text-slate-800 text-xs uppercase mb-2">Checklist de Puntos Críticos en Terreno:</h4>
+                    <div class="bg-white border border-slate-200 rounded-lg p-3 text-xs">
+                        ${itemsHTML}
+                    </div>
+                </div>
+                <div>
+                    <h4 class="font-bold text-slate-800 text-xs uppercase mb-1">Observaciones / Hallazgos Registrados:</h4>
+                    <p class="text-xs bg-amber-50 text-amber-900 p-3 rounded-lg border border-amber-200 font-mono">${u.hallazgos}</p>
+                </div>
+            `;
+
+            // Asignar función de impresión al botón
+            document.getElementById('btn-imprimir-informe').onclick = function() {
+                imprimirInformeAppPDF(u);
+            };
+
+            document.getElementById('modal-inspeccion').classList.remove('hidden');
+        }
+
+        // Imprimir Informe de Inspección App en formato PDF listo para guardar o imprimir
+        function imprimirInformeAppPDF(u) {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            // Membrete Institucional
+            doc.setFillColor(153, 0, 0); // Rojo Bomberos
+            doc.rect(0, 0, 210, 25, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(14);
+            doc.setFont("helvetica", "bold");
+            doc.text("CUERPO DE BOMBEROS - INFORME DE INSPECCIÓN EN TERRENO", 14, 15);
+            doc.setFontSize(8);
+            doc.setFont("helvetica", "normal");
+            doc.text(`Registro Móvil App | Folio OT: ${u.folioOT} | Sello Digital: ${u.hash}`, 14, 21);
+
+            // Datos Generales
+            doc.setTextColor(30, 41, 59);
+            doc.setFontSize(10);
+            doc.setFont("helvetica", "bold");
+            doc.text("1. Información General del Checklist", 14, 33);
+
+            doc.autoTable({
+                startY: 36,
+                head: [['Parámetro', 'Valor Registrado en App']],
+                body: [
+                    ['Unidad / Carro', u.nombre],
+                    ['Folio OT', u.folioOT],
+                    ['Fecha y Hora Inspección', u.fechaChecklist],
+                    ['Maquinista Registrador', u.maquinista],
+                    ['Estado Global Reportado', u.estado]
+                ],
+                theme: 'grid',
+                headStyles: { fillStyle: [153, 0, 0] }
+            });
+
+            // Detalle Checklist
+            const y1 = doc.lastAutoTable.finalY + 8;
+            doc.setFont("helvetica", "bold");
+            doc.text("2. Detalle de Puntos Evaluados", 14, y1);
+
+            const bodyItems = u.checklistDetalle.map(i => [i.item, i.estado]);
+
+            doc.autoTable({
+                startY: y1 + 3,
+                head: [['Punto de Inspección', 'Resultado']],
+                body: bodyItems,
+                theme: 'striped',
+                headStyles: { fillStyle: [30, 41, 59] }
+            });
+
+            // Observaciones
+            const y2 = doc.lastAutoTable.finalY + 8;
+            doc.setFont("helvetica", "bold");
+            doc.text("3. Hallazgos / Observaciones del Maquinista", 14, y2);
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(9);
+            doc.text(doc.splitTextToSize(u.hallazgos, 180), 14, y2 + 6);
+
+            // Firma y Sello
+            const y3 = y2 + 30;
+            doc.setLineDash([2, 2], 0);
+            doc.line(14, y3, 90, y3);
+            doc.line(120, y3, 196, y3);
+            doc.setFontSize(8);
+            doc.text("Firma Maquinista Registrador", 14, y3 + 5);
+            doc.text("Firma Inspector / Comandancia", 120, y3 + 5);
+
+            doc.setFont("helvetica", "italic");
+            doc.text(`Documento generado inmutable mediante hash: ${u.hash}`, 14, y3 + 15);
+
+            // Abrir diálogo de impresión
+            doc.autoPrint();
+            window.open(doc.output('bloburl'), '_blank');
+        }
+
+        function cerrarModal() {
+            document.getElementById('modal-inspeccion').classList.add('hidden');
+        }
+
+        // Descargar PDF Certificado de Resumen
         function descargarPDF(id) {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
             const u = unidades.find(item => item.id === id);
 
-            // Membrete Superior
             doc.setFillColor(15, 23, 42);
             doc.rect(0, 0, 210, 28, 'F');
             doc.setTextColor(255, 255, 255);
-            doc.setFontSize(15);
+            doc.setFontSize(14);
             doc.setFont("helvetica", "bold");
             doc.text("INFORME CERTIFICADO DE INSPECCIÓN DE UNIDAD", 14, 16);
-            doc.setFontSize(9);
+            doc.setFontSize(8);
             doc.setFont("helvetica", "normal");
-            doc.text(`Cuerpo de Bomberos - Documento Inmutable | Hash Sello: ${u.hash}`, 14, 23);
+            doc.text(`CUERPO DE BOMBEROS | Folio OT: ${u.folioOT} | Hash SHA-256: ${u.hash}`, 14, 23);
 
-            // Seccion Datos de Unidad
             doc.setTextColor(30, 41, 59);
-            doc.setFontSize(11);
+            doc.setFontSize(10);
             doc.setFont("helvetica", "bold");
-            doc.text("1. Resumen de Unidad y Registro de Terreno (App)", 14, 38);
+            doc.text("1. Resumen de Registro de Terreno (App Móvil)", 14, 38);
 
             doc.autoTable({
                 startY: 42,
-                head: [['Parámetro', 'Registro']],
+                head: [['Parámetro', 'Registro / Valor']],
                 body: [
                     ['Unidad / Carro', u.nombre],
-                    ['Fecha y Hora Registro App', u.fechaChecklist],
+                    ['Folio OT Asignado', u.folioOT],
+                    ['Fecha y Hora Registro', u.fechaChecklist],
+                    ['Maquinista Registrador', u.maquinista],
                     ['Permiso de Circulación', u.circulacion],
                     ['Seguro Obligatorio (SOAP)', u.soap],
                     ['Revisión Técnica', u.rt],
-                    ['Horómetro / Mantención', u.mantencion],
                     ['Estado Operativo Actual', u.estado],
                     ['Hallazgos Reportados', u.hallazgos]
                 ],
@@ -266,48 +480,51 @@
                 headStyles: { fillStyle: [30, 41, 59] }
             });
 
-            // Sello Legal e Inmutabilidad
-            const finalY = doc.lastAutoTable.finalY + 12;
+            const finalY = doc.lastAutoTable.finalY + 10;
             doc.setFont("helvetica", "bold");
-            doc.text("2. Trazabilidad y Sello Inmutable", 14, finalY);
+            doc.text("2. Trazabilidad e Inmutabilidad Digital", 14, finalY);
             doc.setFont("helvetica", "normal");
             doc.setFontSize(8);
-            doc.text("Este documento certifica el estado reportado directamente desde terreno.", 14, finalY + 6);
-            doc.text("Cualquier intervención manual posterior invalida la legalidad de este reporte.", 14, finalY + 10);
+            doc.text(`Sello SHA-256 Inalterable: ${u.hash}`, 14, finalY + 6);
+            doc.text("Documento legalmente validado bajo estándar de Comandancia.", 14, finalY + 10);
 
-            doc.save(`Reporte_Certificado_${u.id}.pdf`);
+            doc.save(`Certificado_${u.folioOT}.pdf`);
         }
 
-        // Manejo del Cierre de OT para Proveedores Externos (Punto 4)
+        // Manejo Cierre de OT
         document.getElementById('form-certificacion').addEventListener('submit', function(e) {
             e.preventDefault();
             
+            const idSelected = document.getElementById('ot-selector').value;
+            if (!idSelected) return;
+
             const responsable = document.getElementById('responsable-certificacion').value;
             const taller = document.getElementById('taller-nombre').value;
             const fIngreso = document.getElementById('taller-fecha-ingreso').value;
             const fSalida = document.getElementById('taller-fecha-salida').value;
             const archivos = document.getElementById('archivos-externos').files;
 
-            // Actualizar datos de la unidad B-1 en la lista local
-            const b1 = unidades.find(u => u.id === 'B-1');
-            b1.estado = "Operativo";
-            b1.rt = "Al Día";
-            b1.mantencion = "En Regla";
-            b1.hallazgos = `Reparación ejecutada en taller '${taller}' (${fIngreso} a ${fSalida}). Adjuntos: ${archivos.length} archivo(s) (Factura/Informe). Recepcionado por ${responsable}.`;
+            const unidadMod = unidades.find(u => u.id === idSelected);
+            unidadMod.estado = "Operativo";
+            unidadMod.rt = "Al Día";
+            unidadMod.mantencion = "En Regla";
+            unidadMod.hallazgos = `OT #${unidadMod.folioOT} Cerrada. Recepción exitosa de taller '${taller}' (${fIngreso} a ${fSalida}). ${archivos.length} adjunto(s) validados. Recepcionó: ${responsable}.`;
 
-            // Actualizar Tarjeta 1 del Semáforo General a Verde
-            document.getElementById('card-estado-texto').className = "text-2xl font-black text-emerald-600 mt-1";
-            document.getElementById('card-estado-texto').innerText = "100% OPERATIVO";
-            document.getElementById('card-estado-sub').innerText = "Unidad B-1 recepcionada de taller";
-            document.getElementById('card-estado-icon').className = "w-12 h-12 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 font-bold text-2xl";
-            document.getElementById('card-estado-icon').innerText = "✅";
+            const quedanFallas = unidades.some(u => u.estado === "Fuera de Servicio");
+            if (!quedanFallas) {
+                document.getElementById('card-estado-texto').className = "text-2xl font-black text-emerald-600 mt-1";
+                document.getElementById('card-estado-texto').innerText = "100% OPERATIVO";
+                document.getElementById('card-estado-sub').innerText = "Todas las unidades operativas";
+                document.getElementById('card-estado-icon').className = "w-12 h-12 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 font-bold text-2xl";
+                document.getElementById('card-estado-icon').innerText = "✅";
+            }
 
-            alert(`✅ Recepción de Taller Certificada.\n\nUnidad B-1 rehabilitada exitosamente.\nTaller: ${taller}\nArchivos adjuntados: ${archivos.length}`);
+            alert(`✅ Recepción de Taller Certificada para ${unidadMod.nombre}.\n\nFolio OT: #${unidadMod.folioOT}\nTaller: ${taller}\nArchivos adjuntados: ${archivos.length}`);
             renderTabla();
             this.reset();
         });
 
-        // Carga inicial de datos al abrir el archivo
+        // Inicialización
         renderTabla();
     </script>
 </body>
