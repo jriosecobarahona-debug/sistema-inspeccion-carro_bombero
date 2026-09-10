@@ -12,22 +12,12 @@
 </head>
 <body class="bg-slate-100 font-sans text-slate-800">
 
-    <!-- CABECERA PRINCIPAL CON LOGO OFICIAL INSTITUCIONAL -->
+    <!-- CABECERA PRINCIPAL CON LOGO OFICIAL (QUINTA COMPAÑÍA DE BOMBEROS CORONEL) -->
     <header class="bg-slate-900 text-white shadow-lg sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
             <div class="flex items-center space-x-3">
-                <!-- Escudo Oficial Cuerpo de Bomberos (SVG Vectorial) -->
-                <div class="w-12 h-12 bg-red-700 rounded-xl p-2 flex items-center justify-center shadow-md border border-red-500">
-                    <svg viewBox="0 0 100 100" class="w-full h-full fill-white">
-                        <path d="M50 5 L85 20 V50 C85 70 50 95 50 95 C50 95 15 70 15 50 V20 Z" fill="#990000" stroke="#FFFFFF" stroke-width="3"/>
-                        <path d="M30 30 L70 70 M70 30 L30 70" stroke="#FFD700" stroke-width="4" stroke-linecap="round"/>
-                        <rect x="42" y="35" width="16" height="30" fill="#FFFFFF" rx="2"/>
-                        <line x1="42" y1="42" x2="58" y2="42" stroke="#990000" stroke-width="2"/>
-                        <line x1="42" y1="50" x2="58" y2="50" stroke="#990000" stroke-width="2"/>
-                        <line x1="42" y1="58" x2="58" y2="58" stroke="#990000" stroke-width="2"/>
-                        <path d="M35 32 C35 22 65 22 65 32 L70 35 H30 Z" fill="#FFD700"/>
-                    </svg>
-                </div>
+                <!-- Escudo Oficial de la Quinta Compañía de Bomberos de Coronel -->
+                <img src="logo5ta.png" alt="Escudo Quinta Compañía de Bomberos Coronel" class="w-12 h-12 object-contain drop-shadow-md">
                 <div>
                     <h1 class="text-xl font-bold leading-tight tracking-wide uppercase">Cuerpo de Bomberos</h1>
                     <p class="text-xs text-slate-400 font-medium">Control de Material Mayor & Comandancia</p>
@@ -41,7 +31,7 @@
 
     <main class="max-w-7xl mx-auto px-4 py-6 space-y-6">
 
-        <!-- LECTURA RÁPIDA (TARJETAS SEMÁFORO) -->
+        <!-- LECTURA RÁPIDA (TARJETAS SEMÁFORO CORREGIDAS) -->
         <section class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
                 <div>
@@ -64,10 +54,10 @@
             <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
                 <div>
                     <p class="text-xs text-slate-500 uppercase font-semibold">Pauta de Mantención</p>
-                    <p class="text-2xl font-black text-slate-800 mt-1">OVERDUE</p>
+                    <p class="text-2xl font-black text-red-600 mt-1">VENCIDA</p>
                     <p class="text-xs text-slate-400">+120 Horas uso bomba en B-1</p>
                 </div>
-                <div class="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 font-bold text-2xl">🛠️</div>
+                <div class="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center text-red-600 font-bold text-2xl">🛠️</div>
             </div>
         </section>
 
@@ -101,7 +91,7 @@
             </div>
         </section>
 
-        <!-- MÓDULO DE CIERRE DE OT CON SELECTOR DE OT PENDIENTE -->
+        <!-- MÓDULO DE CIERRE DE OT -->
         <section id="modulo-ot" class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 space-y-4">
             <div class="border-b border-slate-100 pb-3 flex flex-col md:flex-row md:justify-between md:items-center gap-2">
                 <div>
@@ -157,7 +147,7 @@
 
     </main>
 
-    <!-- MODAL INSPECCIÓN APP CON BOTÓN IMPRIMIR SEGURO -->
+    <!-- MODAL INSPECCIÓN APP -->
     <div id="modal-inspeccion" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
         <div class="bg-white rounded-xl max-w-2xl w-full shadow-2xl border border-slate-200 overflow-hidden">
             <div class="bg-slate-900 text-white px-6 py-4 flex justify-between items-center">
@@ -181,7 +171,6 @@
         </div>
     </div>
 
-    <!-- SCRIPT CORREGIDO Y VERIFICADO -->
     <script>
         let unidades = [
             {
@@ -254,9 +243,15 @@
                 const tr = document.createElement('tr');
                 tr.className = "border-b border-slate-100 hover:bg-slate-50 transition";
 
-                const badge = (val, okText, isCritical = false) => {
-                    if (val === okText) return `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800">🟢 ${val}</span>`;
-                    return `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${isCritical ? 'bg-red-100 text-red-800' : 'bg-amber-100 text-amber-800'}">${isCritical ? '🔴' : '🟡'} ${val}</span>`;
+                // LOGICA DE COLORES DE BADGES CORREGIDA
+                const badge = (val) => {
+                    if (val.includes("Al Día") || val.includes("En Regla")) {
+                        return `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800">🟢 ${val}</span>`;
+                    }
+                    if (val.includes("Por Vencer")) {
+                        return `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-800">🟡 ${val}</span>`;
+                    }
+                    return `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-800">🔴 ${val}</span>`;
                 };
 
                 const estadoBadge = u.estado === "Operativo" 
@@ -268,10 +263,10 @@
                         ${u.nombre}<br>
                         <span class="text-xs font-mono font-normal text-slate-400">Folio: ${u.folioOT} | SHA: ${u.hash.substring(0, 8)}...</span>
                     </td>
-                    <td class="p-4">${badge(u.circulacion, "Al Día")}</td>
-                    <td class="p-4">${badge(u.soap, "Al Día")}</td>
-                    <td class="p-4">${badge(u.rt, "Al Día", true)}</td>
-                    <td class="p-4">${badge(u.mantencion, "En Regla (3.500 km)", true)}</td>
+                    <td class="p-4">${badge(u.circulacion)}</td>
+                    <td class="p-4">${badge(u.soap)}</td>
+                    <td class="p-4">${badge(u.rt)}</td>
+                    <td class="p-4">${badge(u.mantencion)}</td>
                     <td class="p-4">${estadoBadge}</td>
                     <td class="p-4 text-center space-x-1">
                         <button onclick="verInspeccionApp('${u.id}')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold px-2.5 py-1.5 rounded transition border border-slate-300">
@@ -348,7 +343,6 @@
                 </div>
             `;
 
-            // ASIGNACIÓN LIMPIA Y SEGURA SIN ERRORES DE ÁMBITO
             document.getElementById('btn-imprimir-informe').setAttribute('onclick', `imprimirInformeAppPDF('${u.id}')`);
             document.getElementById('modal-inspeccion').classList.remove('hidden');
         }
@@ -430,52 +424,7 @@
         }
 
         function descargarPDF(id) {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            const u = unidades.find(item => item.id === id);
-
-            doc.setFillColor(15, 23, 42);
-            doc.rect(0, 0, 210, 28, 'F');
-            doc.setTextColor(255, 255, 255);
-            doc.setFontSize(14);
-            doc.setFont("helvetica", "bold");
-            doc.text("INFORME CERTIFICADO DE INSPECCIÓN DE UNIDAD", 14, 16);
-            doc.setFontSize(8);
-            doc.setFont("helvetica", "normal");
-            doc.text(`CUERPO DE BOMBEROS | Folio OT: ${u.folioOT} | Hash SHA-256: ${u.hash}`, 14, 23);
-
-            doc.setTextColor(30, 41, 59);
-            doc.setFontSize(10);
-            doc.setFont("helvetica", "bold");
-            doc.text("1. Resumen de Registro de Terreno (App Móvil)", 14, 38);
-
-            doc.autoTable({
-                startY: 42,
-                head: [['Parámetro', 'Registro / Valor']],
-                body: [
-                    ['Unidad / Carro', u.nombre],
-                    ['Folio OT Asignado', u.folioOT],
-                    ['Fecha y Hora Registro', u.fechaChecklist],
-                    ['Maquinista Registrador', u.maquinista],
-                    ['Permiso de Circulación', u.circulacion],
-                    ['Seguro Obligatorio (SOAP)', u.soap],
-                    ['Revisión Técnica', u.rt],
-                    ['Estado Operativo Actual', u.estado],
-                    ['Hallazgos Reportados', u.hallazgos]
-                ],
-                theme: 'striped',
-                headStyles: { fillStyle: [30, 41, 59] }
-            });
-
-            const finalY = doc.lastAutoTable.finalY + 10;
-            doc.setFont("helvetica", "bold");
-            doc.text("2. Trazabilidad e Inmutabilidad Digital", 14, finalY);
-            doc.setFont("helvetica", "normal");
-            doc.setFontSize(8);
-            doc.text(`Sello SHA-256 Inalterable: ${u.hash}`, 14, finalY + 6);
-            doc.text("Documento legalmente validado bajo estándar de Comandancia.", 14, finalY + 10);
-
-            doc.save(`Certificado_${u.folioOT}.pdf`);
+            imprimirInformeAppPDF(id);
         }
 
         document.getElementById('form-certificacion').addEventListener('submit', function(e) {
