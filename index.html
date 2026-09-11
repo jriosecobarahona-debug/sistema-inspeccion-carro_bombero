@@ -11,7 +11,7 @@
     <style>
         * { box-sizing: border-box; font-family: 'Segoe UI', Arial, sans-serif; }
         body { background-color: #f4f6f9; margin: 0; padding: 15px; color: #333; }
-        .card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); max-width: 600px; margin: auto; }
+        .card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); max-width: 650px; margin: auto; }
         .header { text-align: center; border-bottom: 2px solid #ce1126; padding-bottom: 10px; margin-bottom: 15px; }
         .header img { width: 70px; height: auto; }
         h2 { margin: 5px 0; color: #1a252f; font-size: 20px; }
@@ -23,17 +23,21 @@
         .btn-secondary { background-color: #34495e; margin-top: 5px; }
         .btn-secondary:hover { background-color: #2c3e50; }
         .btn-exit { background-color: #7f8c8d; margin-top: 25px; }
-        .btn-exit:hover { background-color: #626567; }
         .status-box { margin-top: 15px; padding: 12px; border-radius: 5px; text-align: center; font-size: 13px; font-weight: bold; }
-        .grid-neumaticos { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
-        .neumatico-item { background: #f8f9fa; padding: 10px; border: 1px solid #e9ecef; border-radius: 5px; }
+        
+        /* Grid Neumáticos Completo con Captura Fotográfica */
+        .grid-neumaticos { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin-top: 10px; }
+        .neumatico-card { background: #f8f9fa; padding: 12px; border: 1px solid #dee2e6; border-radius: 6px; }
+        .neumatico-card strong { display: block; color: #2c3e50; margin-bottom: 5px; }
+        .preview-thumb { width: 100%; height: 80px; object-fit: cover; border-radius: 4px; margin-top: 5px; display: none; border: 1px solid #ccc; }
+
         .canvas-container { border: 1px solid #ccc; border-radius: 5px; margin-top: 5px; background: #fff; touch-action: none; }
-        canvas { width: 100%; height: 150px; display: block; }
+        canvas { width: 100%; height: 160px; display: block; }
         #qr-reader { width: 100%; margin-top: 10px; border-radius: 5px; overflow: hidden; }
         #qrcode-cert { display: flex; justify-content: center; margin-top: 15px; }
-        .checklist-group { background: #fafafa; padding: 10px; border-radius: 5px; margin-bottom: 10px; border: 1px solid #eee; }
-        .checklist-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-        .checklist-item select { width: 120px; margin-top: 0; }
+        .checklist-group { background: #fafafa; padding: 12px; border-radius: 6px; margin-bottom: 12px; border: 1px solid #eee; }
+        .checklist-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .checklist-item select { width: 130px; margin-top: 0; }
     </style>
 </head>
 <body>
@@ -70,16 +74,17 @@
             <option value="Fuera de Servicio">Fuera de Servicio</option>
         </select>
 
-        <!-- 2. Control Perimetral y Neumáticos -->
-        <h3>2. Estado de Neumáticos</h3>
+        <!-- 2. Control Perimetral y Neumáticos con Fotos -->
+        <h3>2. Estado de Neumáticos y Evidencia Fotográfica</h3>
         <div class="grid-neumaticos" id="contenedorNeumaticos">
-            <!-- Render dinámico según rodado (4 o 6) -->
+            <!-- Render dinámico de tarjetas con foto independiente -->
         </div>
 
-        <label for="foto_hallazgo">Fotografía de Inspección / Hallazgo:</label>
-        <input type="file" id="foto_hallazgo" accept="image/*" capture="environment">
+        <label for="foto_general" style="margin-top:15px;">Fotografía General del Vehículo / Hallazgo:</label>
+        <input type="file" id="foto_general" accept="image/*" capture="environment" onchange="previsualizarFotoGeneral(this)">
+        <img id="thumb_general" class="preview-thumb" alt="Vista previa hallazgo general">
 
-        <!-- 3. Checklist Segmentado -->
+        <!-- 3. Checklist Segmentado Extendido -->
         <h3>3. Inspección de Sistemas</h3>
         
         <div class="checklist-group">
@@ -91,6 +96,10 @@
             <div class="checklist-item">
                 <span>Nivel Refrigerante</span>
                 <select class="chk-item" data-seccion="Motor" data-nombre="Refrigerante"><option value="OK">OK</option><option value="FALLA">FALLA</option></select>
+            </div>
+            <div class="checklist-item">
+                <span>Correas y Mangueras</span>
+                <select class="chk-item" data-seccion="Motor" data-nombre="Correas/Mangueras"><option value="OK">OK</option><option value="FALLA">FALLA</option></select>
             </div>
         </div>
 
@@ -104,26 +113,34 @@
                 <span>Nivel Estanque Agua</span>
                 <select class="chk-item" data-seccion="Bomba" data-nombre="Estanque Agua"><option value="OK">OK</option><option value="FALLA">FALLA</option></select>
             </div>
+            <div class="checklist-item">
+                <span>Válvulas y Descargas</span>
+                <select class="chk-item" data-seccion="Bomba" data-nombre="Válvulas/Descargas"><option value="OK">OK</option><option value="FALLA">FALLA</option></select>
+            </div>
         </div>
 
         <div class="checklist-group">
             <strong style="color:#2c3e50;">Cabina y Luces</strong>
             <div class="checklist-item">
-                <span>Luces de Emergencia</span>
-                <select class="chk-item" data-seccion="Cabina" data-nombre="Luces Emergencia"><option value="OK">OK</option><option value="FALLA">FALLA</option></select>
+                <span>Luces de Emergencia / Balizas</span>
+                <select class="chk-item" data-seccion="Cabina" data-nombre="Balizas/Luces"><option value="OK">OK</option><option value="FALLA">FALLA</option></select>
             </div>
             <div class="checklist-item">
                 <span>Sirena y Radio Base</span>
                 <select class="chk-item" data-seccion="Cabina" data-nombre="Sirena/Radio"><option value="OK">OK</option><option value="FALLA">FALLA</option></select>
             </div>
+            <div class="checklist-item">
+                <span>Frenos y Dirección</span>
+                <select class="chk-item" data-seccion="Cabina" data-nombre="Frenos/Dirección"><option value="OK">OK</option><option value="FALLA">FALLA</option></select>
+            </div>
         </div>
 
-        <label for="hallazgos">Observaciones / Detalle de Hallazgos:</label>
-        <textarea id="hallazgos" rows="3" placeholder="Detalle fallas, niveles o novedades encontradas..."></textarea>
+        <label for="hallazgos">Observaciones / Detalle de Novedades:</label>
+        <textarea id="hallazgos" rows="3" placeholder="Detalle fallas, niveles o hallazgos perimetrales..."></textarea>
 
-        <!-- 4. Firma Digital y Sello -->
+        <!-- 4. Conformidad y Firma Digital -->
         <h3>4. Conformidad y Firma</h3>
-        <label>Firma Maquinista:</label>
+        <label>Firma Maquinista Responsable:</label>
         <div class="canvas-container">
             <canvas id="canvasFirma"></canvas>
         </div>
@@ -145,7 +162,6 @@
     let ctx = canvas.getContext('2d');
     let dibujando = false;
 
-    // Inicialización
     document.addEventListener("DOMContentLoaded", () => {
         ajustarCanvas();
         actualizarConfiguracionCarro();
@@ -155,13 +171,13 @@
         }
     });
 
-    // Eventos de dibujo en Canvas (Firma Touch/Mouse)
     function ajustarCanvas() {
         let rect = canvas.getBoundingClientRect();
         canvas.width = rect.width;
         canvas.height = rect.height;
     }
 
+    // Trazo Canvas Touch / Mouse
     canvas.addEventListener('mousedown', () => dibujando = true);
     canvas.addEventListener('mouseup', () => { dibujando = false; ctx.beginPath(); });
     canvas.addEventListener('mousemove', dibujar);
@@ -198,7 +214,7 @@
         ctx.clearRect(0, 0, canvas.width, canvas.height);
     }
 
-    // Configuración dinámica por rodado
+    // Render Dinámico de Neumáticos con Foto Individual
     function actualizarConfiguracionCarro() {
         const select = document.getElementById('unidad');
         const option = select.options[select.selectedIndex];
@@ -207,7 +223,7 @@
 
         if (!option.value) {
             chasisInput.value = '';
-            contenedor.innerHTML = '<small style="color:#7f8c8d;">Seleccione una unidad para desplegar neumáticos.</small>';
+            contenedor.innerHTML = '<small style="color:#7f8c8d;">Seleccione una unidad para desplegar los neumáticos.</small>';
             return;
         }
 
@@ -221,20 +237,48 @@
 
         posiciones.forEach((pos, idx) => {
             htmlNeu += `
-                <div class="neumatico-item">
-                    <small><b>${pos}</b></small>
+                <div class="neumatico-card">
+                    <strong>${pos}</strong>
                     <select class="neu-val" data-pos="${pos}">
-                        <option value="OK">OK</option>
+                        <option value="OK">OK / Normal</option>
                         <option value="BAJO">Presión Baja</option>
-                        <option value="DESGASTE">Desgastado</option>
+                        <option value="DESGASTE">Desgaste Excesivo</option>
+                        <option value="DAÑO">Daño / Corte</option>
                     </select>
+                    <label style="font-size:11px; margin-top:6px;">Foto Neumático:</label>
+                    <input type="file" class="neu-foto" accept="image/*" capture="environment" data-pos="${pos}" onchange="previsualizarFotoNeu(this, ${idx})">
+                    <img id="thumb_neu_${idx}" class="preview-thumb" alt="Preview ${pos}">
                 </div>
             `;
         });
         contenedor.innerHTML = htmlNeu;
     }
 
-    // Escáner QR
+    function previsualizarFotoNeu(input, idx) {
+        const thumb = document.getElementById(`thumb_neu_${idx}`);
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = e => {
+                thumb.src = e.target.result;
+                thumb.style.display = 'block';
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    function previsualizarFotoGeneral(input) {
+        const thumb = document.getElementById('thumb_general');
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = e => {
+                thumb.src = e.target.result;
+                thumb.style.display = 'block';
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    // Escáner QR Cabina
     function iniciarEscanerQR() {
         document.getElementById('qr-reader').style.display = 'block';
         html5QrcodeScanner = new Html5Qrcode("qr-reader");
@@ -249,11 +293,11 @@
                         actualizarConfiguracionCarro();
                     }
                 } catch(e) {
-                    console.log("QR no es JSON estructurado, asignando texto directo.");
+                    console.log("QR procesado como texto.");
                 }
                 detenerEscanerQR();
             },
-            (error) => {}
+            () => {}
         );
     }
 
@@ -265,18 +309,36 @@
         }
     }
 
-    // Proceso de Envío e Sincronización Integrado
+    // Procesamiento de Formulario y Fotos Múltiples
     document.getElementById('formChecklist').addEventListener('submit', async function(e) {
         e.preventDefault();
 
-        // Conversión foto a Base64
-        const fotoInput = document.getElementById('foto_hallazgo');
-        let fotoBase64 = "";
-        if (fotoInput.files && fotoInput.files[0]) {
-            fotoBase64 = await convertirBase64(fotoInput.files[0]);
+        // Conversión Foto General
+        const fotoGeneralInput = document.getElementById('foto_general');
+        let fotoGeneralBase64 = "";
+        if (fotoGeneralInput.files && fotoGeneralInput.files[0]) {
+            fotoGeneralBase64 = await convertirBase64(fotoGeneralInput.files[0]);
         }
 
-        // Checklist estructurado
+        // Lectura e imágenes por cada neumático
+        let itemsNeumaticos = [];
+        const neuCards = document.querySelectorAll('.neu-val');
+        for (let i = 0; i < neuCards.length; i++) {
+            const pos = neuCards[i].getAttribute('data-pos');
+            const val = neuCards[i].value;
+            const fileInput = document.querySelectorAll('.neu-foto')[i];
+            let fotoNeuBase64 = "";
+            if (fileInput && fileInput.files && fileInput.files[0]) {
+                fotoNeuBase64 = await convertirBase64(fileInput.files[0]);
+            }
+            itemsNeumaticos.push({
+                posicion: pos,
+                estado: val,
+                foto: fotoNeuBase64
+            });
+        }
+
+        // Checklist de Sistemas
         let itemsChecklist = [];
         document.querySelectorAll('.chk-item').forEach(el => {
             itemsChecklist.push({
@@ -286,19 +348,9 @@
             });
         });
 
-        // Neumáticos estructurados
-        let itemsNeumaticos = [];
-        document.querySelectorAll('.neu-val').forEach(el => {
-            itemsNeumaticos.push({
-                posicion: el.getAttribute('data-pos'),
-                estado: el.value
-            });
-        });
-
         const firmaData = canvas.toDataURL();
         const timestamp = new Date().toISOString();
 
-        // Payload local preliminar
         let payload = {
             unidad: document.getElementById('unidad').value,
             chasis: document.getElementById('chasis').value,
@@ -307,12 +359,12 @@
             hallazgos: document.getElementById('hallazgos').value || "Sin novedades",
             checklist: itemsChecklist,
             neumaticos: itemsNeumaticos,
-            foto: fotoBase64,
+            foto_general: fotoGeneralBase64,
             firma: firmaData,
             fecha: timestamp
         };
 
-        // Generar Hash SHA-256 local para validación origen
+        // SHA-256 en cliente
         payload.hash = await calcularSHA256(JSON.stringify({
             unidad: payload.unidad,
             maquinista: payload.maquinista,
@@ -348,7 +400,7 @@
                 guardarEnMemoriaLocal(datos);
             }
         } catch (error) {
-            console.warn("Conexión con Servidor del Cuartel fallida. Guardando offline...", error);
+            console.warn("Servidor del Cuartel no alcanzado. Guardando localmente...", error);
             guardarEnMemoriaLocal(datos);
         }
     }
@@ -358,7 +410,7 @@
         cola.push(datos);
         localStorage.setItem("checklist_pendientes", JSON.stringify(cola));
         
-        mostrarMensaje("📲 Guardado en memoria local del teléfono. Se transmitirá al reconectar con la red del Cuartel.", "#fff3cd", "#856404");
+        mostrarMensaje("📲 Guardado localmente en el teléfono. Se enviará al reconectar al Wi-Fi del Cuartel.", "#fff3cd", "#856404");
         generarQRGrafico(datos.hash);
         resetearFormulario();
     }
@@ -383,7 +435,6 @@
         localStorage.setItem("checklist_pendientes", JSON.stringify(pendientesRestantes));
     }
 
-    // Funciones Auxiliares Criptografía y QR
     async function calcularSHA256(texto) {
         const msgUint8 = new TextEncoder().encode(texto);
         const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
@@ -394,11 +445,7 @@
     function generarQRGrafico(texto) {
         const contenedor = document.getElementById("qrcode-cert");
         contenedor.innerHTML = "";
-        new QRCode(contenedor, {
-            text: texto,
-            width: 128,
-            height: 128
-        });
+        new QRCode(contenedor, { text: texto, width: 128, height: 128 });
     }
 
     function convertirBase64(file) {
@@ -422,6 +469,7 @@
         document.getElementById('formChecklist').reset();
         limpiarFirma();
         actualizarConfiguracionCarro();
+        document.querySelectorAll('.preview-thumb').forEach(el => el.style.display = 'none');
     }
 
     function salirAplicacion() {
